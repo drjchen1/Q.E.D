@@ -259,7 +259,7 @@ const App: React.FC = () => {
         try {
           setState(prev => ({ 
             ...prev, 
-            statusMessage: `Digitizing Page ${i + 1}...`,
+            statusMessage: `Digitizing Page ${i + 1} of ${totalPages}...`,
           }));
 
           const geminiResponse = await convertPageToHtml(pageData[i].base64, i + 1, languageLevel);
@@ -268,12 +268,21 @@ const App: React.FC = () => {
           // Final check for equations - only if math is present
           const hasMath = finalHtml.includes('\\(') || finalHtml.includes('\\[');
           if (hasMath) {
+            setState(prev => ({ 
+              ...prev, 
+              statusMessage: `Refining LaTeX on Page ${i + 1}...`,
+            }));
             try {
               finalHtml = await refineLatex(finalHtml);
             } catch (e) {
               console.error('Latex refinement failed', e);
             }
           }
+
+          setState(prev => ({ 
+            ...prev, 
+            statusMessage: `Extracting visual figures from Page ${i + 1}...`,
+          }));
 
           // Process figures
           const figureResults = geminiResponse.figures.map((fig) => {
@@ -342,7 +351,12 @@ const App: React.FC = () => {
       }
       await Promise.all(pool);
 
-      setState(prev => ({ ...prev, isProcessing: false, statusMessage: 'Digitization Complete' }));
+      setState(prev => ({ 
+        ...prev, 
+        isProcessing: false, 
+        statusMessage: 'Digitization Complete! Your accessible document is ready.',
+        progress: 100
+      }));
       setActiveTab(0);
     } catch (err: any) {
       setState(prev => ({ ...prev, isProcessing: false, error: err.message, statusMessage: 'Error' }));
