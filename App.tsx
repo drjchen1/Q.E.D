@@ -437,8 +437,64 @@ const App: React.FC = () => {
             font-size: 1.125rem;
         }
 
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .layout {
+                display: grid;
+                grid-template-columns: 200px 1fr;
+                gap: 6rem;
+                align-items: start;
+                padding-top: 4rem;
+            }
+            .sidebar {
+                position: sticky;
+                top: 4rem;
+                display: block !important;
+            }
+        }
+
+        .sidebar {
+            display: none;
+        }
+
+        .sidebar-title {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-nav a {
+            font-size: 0.85rem;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            color: var(--accent);
+        }
+
         article { 
-            margin-bottom: 6rem; 
+            margin-bottom: 8rem; 
             position: relative; 
             width: 100%; 
             background: white;
@@ -552,24 +608,36 @@ const App: React.FC = () => {
     </style>
 </head>
 <body>
-    <main class="container" style="max-width: 800px; margin: 0 auto; padding: 4rem 2rem 12rem;">
-        ${cleanResults.map((r, idx) => `
-        <article id="page-${r.pageNumber}" role="region">
-            ${idx === 0 && originalFileName ? `
-            <div class="no-print" style="position: absolute; top: 0; right: 0;">
-                <a href="${originalFileName}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#CFB991] text-black rounded-xl font-black text-[11px] hover:bg-[#B19B69] transition-all border-2 border-black no-underline tracking-widest shadow-xl transform hover:-translate-y-0.5 active:translate-y-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Download original notes
-                </a>
-            </div>` : ''}
-            <span class="page-badge">PAGE ${r.pageNumber}</span>
-            <div class="math-content">
-                ${r.html}
-            </div>
-        </article>`).join('\n')}
-    </main>
+    <div class="container">
+        <div class="layout">
+            <nav class="sidebar no-print" aria-label="Document navigation">
+                <div class="sidebar-title">Contents</div>
+                <ul class="sidebar-nav">
+                    ${cleanResults.map(r => `
+                    <li><a href="#page-${r.pageNumber}">Page ${r.pageNumber}</a></li>
+                    `).join('')}
+                </ul>
+            </nav>
+            <main class="content" style="padding-bottom: 12rem;">
+                ${cleanResults.map((r, idx) => `
+                <article id="page-${r.pageNumber}" role="region">
+                    ${idx === 0 && originalFileName ? `
+                    <div class="no-print" style="position: absolute; top: 0; right: 0;">
+                        <a href="${originalFileName}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#CFB991] text-black rounded-xl font-black text-[11px] hover:bg-[#B19B69] transition-all border-2 border-black no-underline tracking-widest shadow-xl transform hover:-translate-y-0.5 active:translate-y-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Download original notes
+                        </a>
+                    </div>` : ''}
+                    <span class="page-badge">PAGE ${r.pageNumber}</span>
+                    <div class="math-content">
+                        ${r.html}
+                    </div>
+                </article>`).join('\n')}
+            </main>
+        </div>
+    </div>
 </body>
 </html>`;
 
@@ -766,9 +834,9 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8" role="main">
+      <main className="flex-1 max-w-[1800px] mx-auto w-full px-4 sm:px-6 lg:px-12 py-8" role="main">
         {!state.results.length && !state.isProcessing ? (
-          <div className="max-w-4xl mx-auto mt-12 text-center p-16 border-2 border-dashed border-slate-200 rounded-[3rem]">
+          <div className="max-w-6xl mx-auto mt-12 text-center p-16 border-2 border-dashed border-slate-200 rounded-[3rem]">
             <h2 className="text-5xl font-black text-slate-900 tracking-tight mb-8">Ready to <span className="text-indigo-600">Digitize.</span></h2>
             
             <div className="max-w-md mx-auto mb-12 bg-slate-50 p-6 rounded-3xl border border-slate-100">
@@ -870,7 +938,7 @@ const App: React.FC = () => {
             </aside>
 
             <div className="flex-1 w-full flex flex-col items-center">
-              <div className="w-full max-w-7xl">
+              <div className="w-full max-w-none">
                 <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
                    <div className="flex gap-4">
                       <button onClick={() => setViewMode('preview')} className={`text-[11px] font-black tracking-widest ${viewMode === 'preview' ? 'text-indigo-600' : 'text-slate-300 hover:text-slate-500'}`}>PREVIEW</button>
