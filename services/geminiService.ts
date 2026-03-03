@@ -30,9 +30,11 @@ Rules:
    - MATHEMATICS: Ensure block math '\\[ ... \\]' is wrapped in a '<div class="my-8 overflow-x-auto py-4 bg-slate-50 rounded-xl px-6 border border-slate-100 shadow-sm">' to make it stand out and be readable.
    - LISTS: Use 'list-disc list-inside space-y-2 ml-4 mb-6' for unordered lists.
    - NOTEPADS/BOXES: For boxed annotations, use '<div class="bg-amber-50 border-l-4 border-amber-400 p-6 my-8 rounded-r-xl shadow-sm text-slate-800">'.
-4. MATHEMATICS: Convert all mathematical expressions into LaTeX. 
+4. MATHEMATICS (CRITICAL): Convert all mathematical expressions into LaTeX. 
    - Use \\( ... \\) for inline math.
    - Use \\[ ... \\] for block/display math.
+   - Ensure backslashes are present for all functions (e.g., \\sin, \\cos, \\log, \\sqrt, \\times).
+   - Double check that delimiters are NOT missing.
 
 4. DISTINGUISH ANNOTATIONS VS. FIGURES (STRICT ENFORCEMENT):
    - ANNOTATIONS (NOT FIGURES): Hand-drawn circles around text, arrows pointing to variables, large curly brackets used for grouping, and labels in boxes (e.g., "Option 2", "Important!") are NOT FIGURES.
@@ -50,7 +52,7 @@ Rules:
    - Identify every actual drawing (axes, curves, sketches).
    - Determine its exact bounding box in [ymin, xmin, ymax, xmax] format (normalized 0-1000).
    - Generate a COMPREHENSIVE alt text description for blind students. 
-   - MATHEMATICAL PRECISION: Use LaTeX (wrapped in \( ... \)) for complex mathematical expressions within the alt text to ensure visual rendering in captions.
+   - MATHEMATICAL PRECISION (CRITICAL): Use LaTeX (wrapped in \\( ... \\)) for complex mathematical expressions within the alt text. This is vital for visual rendering in captions.
    - ACCESSIBILITY: Also provide a clear, spoken-word description of the math (e.g., "the square root of x") to ensure screen reader compatibility.
    - VISUAL STRUCTURE: Describe the overall layout (e.g., "A Cartesian coordinate system"), then specific components (axes, labels, curves), and finally the mathematical meaning.
    - In the HTML, place an <img> tag with a matching ID: <img id="fig_ID" alt="[COMPREHENSIVE DESCRIPTION]">.
@@ -168,9 +170,10 @@ export const refineLatex = async (html: string): Promise<string> => {
           
           RULES:
           1. Ensure all inline math uses \\( ... \\) and block math uses \\[ ... \\].
-          2. Fix common OCR errors (e.g., 'x' instead of '\\times', missing backslashes for functions like '\\sin', '\\log', etc.).
-          3. DO NOT change any other HTML structure or text content.
-          4. If the math is already correct, return the HTML unchanged.
+          2. Pay special attention to <figcaption> tags and ensure any mathematical expressions within them are correctly wrapped in LaTeX delimiters.
+          3. Fix common OCR errors (e.g., 'x' instead of '\\times', missing backslashes for functions like '\\sin', '\\log', etc.).
+          4. DO NOT change any other HTML structure or text content.
+          5. If the math is already correct, return the HTML unchanged.
           
           HTML CONTENT:
           ${html}

@@ -24,6 +24,7 @@ const App: React.FC = () => {
   const [showAuditReport, setShowAuditReport] = useState(false);
   const [languageLevel, setLanguageLevel] = useState<LanguageLevel>('faithful');
   const [editingFigures, setEditingFigures] = useState<{ id: string, src: string, originalSrc: string, alt: string, pageIndex: number }[] | null>(null);
+  const [isRefining, setIsRefining] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,6 +57,24 @@ const App: React.FC = () => {
         originalSrc: figure.originalSrc,
         alt: figure.alt
       }]);
+    }
+  };
+
+  const handleRefineMath = async () => {
+    if (state.results.length === 0) return;
+    setIsRefining(true);
+    try {
+      const page = state.results[activeTab];
+      const refinedHtml = await refineLatex(page.html);
+      
+      const newResults = [...state.results];
+      newResults[activeTab] = { ...page, html: refinedHtml };
+      setState(prev => ({ ...prev, results: newResults }));
+    } catch (err) {
+      console.error('Manual refinement failed:', err);
+      alert('Failed to refine math on this page.');
+    } finally {
+      setIsRefining(false);
     }
   };
 
@@ -95,8 +114,8 @@ const App: React.FC = () => {
           const figure = img?.closest('figure');
           
           if (img && figure) {
-            // Preserve delimiters in alt text for screen readers that support them
-            const cleanAlt = (newAlt || updatedFig.alt).replace(/"/g, '&quot;');
+            // For the alt attribute, we keep the LaTeX but remove delimiters for better screen reader compatibility
+            const cleanAlt = (newAlt || updatedFig.alt).replace(/\\\(|\\\)|\\\[|\\\]/g, '').replace(/"/g, '&quot;');
             img.setAttribute('src', newSrc);
             img.setAttribute('alt', cleanAlt);
             figure.setAttribute('aria-label', `Visual figure: ${cleanAlt}`);
@@ -106,6 +125,7 @@ const App: React.FC = () => {
               figcaption = doc.createElement('figcaption');
               figure.appendChild(figcaption);
             }
+            // The figcaption IS rendered by MathJax, so we keep the delimiters
             figcaption.innerHTML = `Figure: ${newAlt || updatedFig.alt}`;
             
             page.html = doc.body.innerHTML;
@@ -260,28 +280,28 @@ const App: React.FC = () => {
 
       const processPage = async (i: number) => {
         try {
+          const updateProgress = (stepWeight: number) => {
+            // Each page is 100 units.
+            // - convertPageToHtml: 80 units
+            // - figures: 20 units
+            const currentProgress = (completedPages * 100 + stepWeight) / totalPages;
+            setState(prev => ({ 
+              ...prev, 
+              progress: Math.min(99, currentProgress) 
+            }));
+          };
+
+          updateProgress(10);
           setState(prev => ({ 
             ...prev, 
             statusMessage: `Digitizing Page ${i + 1} of ${totalPages}...`,
           }));
 
           const geminiResponse = await convertPageToHtml(pageData[i].base64, i + 1, languageLevel);
+          updateProgress(80);
+          
           let finalHtml = geminiResponse.html;
           
-          // Final check for equations - only if math is present
-          const hasMath = finalHtml.includes('\\(') || finalHtml.includes('\\[');
-          if (hasMath) {
-            setState(prev => ({ 
-              ...prev, 
-              statusMessage: `Refining LaTeX on Page ${i + 1}...`,
-            }));
-            try {
-              finalHtml = await refineLatex(finalHtml);
-            } catch (e) {
-              console.error('Latex refinement failed', e);
-            }
-          }
-
           setState(prev => ({ 
             ...prev, 
             statusMessage: `Extracting visual figures from Page ${i + 1}...`,
@@ -300,6 +320,9 @@ const App: React.FC = () => {
           
           figureResults.forEach(figResult => {
             const imgTagRegex = new RegExp(`<img[^>]*id=["']${figResult.id}["'][^>]*>`, 'g');
+            // For the alt attribute, we keep the LaTeX but remove delimiters for better screen reader compatibility
+            // unless the user specifically wants them. The user mentioned "inconsistent rendering", 
+            // so we'll ensure the figcaption (which IS rendered) is robust.
             const cleanAlt = figResult.alt.replace(/\\\(|\\\)|\\\[|\\\]/g, '').replace(/"/g, '&quot;');
             const figureHtml = `
               <figure class="my-8 p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col items-center group/fig" role="group" aria-label="Visual figure: ${cleanAlt}">
@@ -316,6 +339,7 @@ const App: React.FC = () => {
             `;
             finalHtml = finalHtml.replace(imgTagRegex, figureHtml);
           });
+          updateProgress(100);
 
           const audit = runAccessibilityAudit(finalHtml);
 
@@ -441,9 +465,10 @@ const App: React.FC = () => {
         }
 
         .container {
-            max-width: 1400px;
+            width: 100%;
             margin: 0 auto;
             padding: 2rem;
+            transition: all 0.3s ease;
         }
 
         @media (min-width: 1024px) {
@@ -454,10 +479,13 @@ const App: React.FC = () => {
                 align-items: start;
                 padding-top: 4rem;
                 transition: all 0.3s ease;
+                max-width: 1400px;
+                margin: 0 auto;
             }
             .layout.sidebar-hidden {
                 grid-template-columns: 1fr;
                 gap: 0;
+                max-width: none;
             }
             .sidebar {
                 position: sticky;
@@ -468,9 +496,14 @@ const App: React.FC = () => {
                 display: none !important;
             }
             .content-expanded {
-                max-width: 1000px;
-                margin: 0 auto;
+                max-width: none;
+                margin: 0;
             }
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 1cm;
         }
 
         .sidebar {
@@ -1003,6 +1036,13 @@ const App: React.FC = () => {
 
                 <h3 className="font-bold text-slate-900 mb-4 text-[10px] uppercase tracking-widest border-t border-slate-100 pt-4">Controls</h3>
                 <div className="space-y-2">
+                   <button 
+                     onClick={handleRefineMath} 
+                     disabled={isRefining}
+                     className="w-full py-2.5 bg-white border border-slate-200 text-slate-900 rounded-xl text-[10px] font-bold hover:bg-slate-50 disabled:opacity-50 flex items-center justify-center gap-2"
+                   >
+                     {isRefining ? 'REFINING...' : 'REFINE MATH (AI)'}
+                   </button>
                    <button onClick={handleBatchEdit} className="w-full py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-slate-800">BATCH EDIT FIGURES</button>
                    <button onClick={handleDownloadHtml} className="w-full py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-bold hover:bg-indigo-700">DOWNLOAD HTML</button>
                 </div>
