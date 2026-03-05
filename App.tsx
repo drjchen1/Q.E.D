@@ -49,7 +49,7 @@ const App: React.FC = () => {
   };
 
   const [originalFile, setOriginalFile] = useState<File | null>(null);
-  const [viewMode, setViewMode] = useState<'preview' | 'source'>('preview');
+  const [viewMode, setViewMode] = useState<'preview' | 'source' | 'latex'>('preview');
   const [activeTab, setActiveTab] = useState<number>(0);
   const [showHelp, setShowHelp] = useState(false);
   const [showAuditReport, setShowAuditReport] = useState(false);
@@ -100,7 +100,9 @@ const App: React.FC = () => {
         pageIndex, 
         src: figure.currentSrc,
         originalSrc: figure.originalSrc,
-        alt: figure.alt
+        alt: figure.alt,
+        width: figure.width,
+        alignment: figure.alignment
       }]);
     }
   };
@@ -132,18 +134,20 @@ const App: React.FC = () => {
         pageIndex: activeTab,
         src: f.currentSrc,
         originalSrc: f.originalSrc,
-        alt: f.alt
+        alt: f.alt,
+        width: f.width,
+        alignment: f.alignment
       })));
     } else {
       alert('No figures found on this page to batch edit.');
     }
   };
 
-  const saveEditedFigures = (updates: { figureId: string, pageIndex: number, newSrc: string, newAlt?: string }[]) => {
+  const saveEditedFigures = (updates: { figureId: string, pageIndex: number, newSrc: string, newAlt?: string, newWidth?: string, newAlignment?: 'left' | 'center' | 'right' }[]) => {
     setState(prev => {
       const newResults = [...prev.results];
       
-      updates.forEach(({ figureId, pageIndex, newSrc, newAlt }) => {
+      updates.forEach(({ figureId, pageIndex, newSrc, newAlt, newWidth, newAlignment }) => {
         const page = { ...newResults[pageIndex] };
         const figureIndex = page.figures.findIndex(f => f.id === figureId);
         
@@ -151,6 +155,8 @@ const App: React.FC = () => {
           const newFigures = [...page.figures];
           const updatedFig = { ...newFigures[figureIndex], currentSrc: newSrc };
           if (newAlt !== undefined) updatedFig.alt = newAlt;
+          if (newWidth !== undefined) updatedFig.width = newWidth;
+          if (newAlignment !== undefined) updatedFig.alignment = newAlignment;
           newFigures[figureIndex] = updatedFig;
           page.figures = newFigures;
           
@@ -164,7 +170,19 @@ const App: React.FC = () => {
             const cleanAlt = (newAlt || updatedFig.alt).replace(/\\\(|\\\)|\\\[|\\\]/g, '').replace(/"/g, '&quot;');
             img.setAttribute('src', newSrc);
             img.setAttribute('alt', cleanAlt);
+            
+            // Update figure style and alignment
+            const alignment = newAlignment || updatedFig.alignment || 'center';
+            const width = newWidth || updatedFig.width || '100%';
+            
             figure.setAttribute('aria-label', `Visual figure: ${cleanAlt}`);
+            figure.setAttribute('style', `width: ${width}`);
+            
+            // Update alignment classes
+            figure.classList.remove('mx-auto', 'mr-auto', 'ml-auto');
+            if (alignment === 'left') figure.classList.add('mr-auto');
+            else if (alignment === 'right') figure.classList.add('ml-auto');
+            else figure.classList.add('mx-auto');
             
             let figcaption = figure.querySelector('figcaption');
             if (!figcaption) {
@@ -358,13 +376,15 @@ const App: React.FC = () => {
           }));
 
           // Process figures
-          const figureResults = geminiResponse.figures.map((fig) => {
+          const figureResults: FigureResult[] = geminiResponse.figures.map((fig) => {
             const screenshotBase64 = cropImage(pageData[i].canvas, fig);
             return {
               id: fig.id,
               originalSrc: screenshotBase64,
               currentSrc: screenshotBase64,
-              alt: fig.alt
+              alt: fig.alt,
+              width: '100%',
+              alignment: 'center'
             };
           });
           
@@ -374,10 +394,11 @@ const App: React.FC = () => {
             // unless the user specifically wants them. The user mentioned "inconsistent rendering", 
             // so we'll ensure the figcaption (which IS rendered) is robust.
             const cleanAlt = figResult.alt.replace(/\\\(|\\\)|\\\[|\\\]/g, '').replace(/"/g, '&quot;');
+            const alignmentClass = figResult.alignment === 'left' ? 'mr-auto' : figResult.alignment === 'right' ? 'ml-auto' : 'mx-auto';
             const figureHtml = `
-              <figure class="my-8 p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col items-center group/fig" role="group" aria-label="Visual figure: ${cleanAlt}">
-                <div class="relative overflow-hidden rounded-lg shadow-sm border border-slate-200 bg-white">
-                  <img src="${figResult.currentSrc}" alt="${cleanAlt}" class="max-w-full" data-figure-id="${figResult.id}">
+              <figure class="my-8 p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col items-center group/fig ${alignmentClass}" style="width: ${figResult.width || '100%'}" role="group" aria-label="Visual figure: ${cleanAlt}">
+                <div class="relative overflow-hidden rounded-lg shadow-sm border border-slate-200 bg-white w-full">
+                  <img src="${figResult.currentSrc}" alt="${cleanAlt}" class="w-full h-auto" data-figure-id="${figResult.id}">
                   <button class="edit-figure-btn absolute top-2 right-2 p-2 bg-white/90 backdrop-blur shadow-lg rounded-lg opacity-0 group-hover/fig:opacity-100 transition-all hover:bg-indigo-600 hover:text-white" data-figure-id="${figResult.id}" title="Edit Figure">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                   </button>
@@ -395,6 +416,7 @@ const App: React.FC = () => {
 
           results[i] = { 
             html: finalHtml, 
+            latex: geminiResponse.latex,
             pageNumber: i + 1,
             width: pageData[i].width,
             height: pageData[i].height,
@@ -630,8 +652,8 @@ const App: React.FC = () => {
             color: var(--accent);
         }
 
-        article { 
-            margin-bottom: 8rem; 
+        article, section { 
+            margin-bottom: 2rem; 
             position: relative; 
             width: 100%; 
             background: white;
@@ -734,10 +756,10 @@ const App: React.FC = () => {
         @media print {
             body { font-size: 12pt; }
             .container { max-width: none; padding: 0; }
-            article { 
+            article, section { 
                 padding: 0; 
                 margin-bottom: 0; 
-                page-break-after: always; 
+                page-break-inside: avoid; 
             }
             .page-badge { display: none; }
             .no-print { display: none !important; }
@@ -1144,7 +1166,8 @@ const App: React.FC = () => {
                 <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
                    <div className="flex gap-4">
                       <button onClick={() => setViewMode('preview')} className={`text-[11px] font-black tracking-widest ${viewMode === 'preview' ? 'text-indigo-600' : 'text-slate-300 hover:text-slate-500'}`}>PREVIEW</button>
-                      <button onClick={() => setViewMode('source')} className={`text-[11px] font-black tracking-widest ${viewMode === 'source' ? 'text-indigo-600' : 'text-slate-300 hover:text-slate-500'}`}>SOURCE</button>
+                      <button onClick={() => setViewMode('source')} className={`text-[11px] font-black tracking-widest ${viewMode === 'source' ? 'text-indigo-600' : 'text-slate-300 hover:text-slate-500'}`}>HTML</button>
+                      <button onClick={() => setViewMode('latex')} className={`text-[11px] font-black tracking-widest ${viewMode === 'latex' ? 'text-indigo-600' : 'text-slate-300 hover:text-slate-500'}`}>LATEX</button>
                    </div>
                    <div className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Page {activeTab + 1} of {state.results.length}</div>
                 </div>
@@ -1154,9 +1177,25 @@ const App: React.FC = () => {
                     <article ref={contentRef} className="math-content prose prose-slate prose-indigo max-w-none">
                        <div dangerouslySetInnerHTML={{ __html: state.results[activeTab]?.html || '' }} />
                     </article>
-                  ) : (
+                  ) : viewMode === 'source' ? (
                     <div className="font-mono text-[11px] text-slate-500 bg-slate-50 p-8 rounded-3xl whitespace-pre-wrap leading-loose">
                       {state.results[activeTab]?.html}
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <button 
+                        onClick={() => {
+                          const latex = state.results[activeTab]?.latex || '';
+                          navigator.clipboard.writeText(latex);
+                          alert('LaTeX copied to clipboard!');
+                        }}
+                        className="absolute top-4 right-4 px-4 py-2 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-indigo-700 transition-all shadow-lg"
+                      >
+                        Copy LaTeX
+                      </button>
+                      <div className="font-mono text-[11px] text-slate-500 bg-slate-50 p-8 rounded-3xl whitespace-pre-wrap leading-loose">
+                        {state.results[activeTab]?.latex || 'No LaTeX source available for this page.'}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1179,7 +1218,7 @@ const App: React.FC = () => {
         @media print {
           header, aside, button, label, .border-b { display: none !important; }
           main, .flex-1, .w-full { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
-          article { border: none !important; padding: 0 !important; margin: 0 !important; page-break-after: always; }
+          article, section { border: none !important; padding: 0 !important; margin: 0 !important; page-break-inside: avoid; }
         }
       `}</style>
     </div>
