@@ -420,6 +420,7 @@ const App: React.FC = () => {
             pageNumber: i + 1,
             width: pageData[i].width,
             height: pageData[i].height,
+            orientation: pageData[i].orientation,
             audit,
             figures: figureResults
           };
@@ -500,6 +501,8 @@ const App: React.FC = () => {
       return { ...r, html: doc.body.innerHTML };
     });
 
+    const docOrientation = state.results[0]?.orientation || 'portrait';
+
     const template = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -543,18 +546,19 @@ const App: React.FC = () => {
             width: 100%;
             margin: 0 auto;
             padding: 2rem;
+            max-width: ${docOrientation === 'landscape' ? '1200px' : '900px'};
             transition: all 0.3s ease;
         }
 
         @media (min-width: 1024px) {
             .layout {
                 display: grid;
-                grid-template-columns: 200px 1fr;
+                grid-template-columns: ${docOrientation === 'landscape' ? '1fr' : '200px 1fr'};
                 gap: 6rem;
                 align-items: start;
                 padding-top: 4rem;
                 transition: all 0.3s ease;
-                max-width: 1400px;
+                max-width: ${docOrientation === 'landscape' ? '1400px' : '1400px'};
                 margin: 0 auto;
             }
             .layout.sidebar-hidden {
@@ -565,7 +569,7 @@ const App: React.FC = () => {
             .sidebar {
                 position: sticky;
                 top: 4rem;
-                display: block !important;
+                display: ${docOrientation === 'landscape' ? 'none !important' : 'block !important'};
             }
             .sidebar.hidden {
                 display: none !important;
@@ -577,7 +581,7 @@ const App: React.FC = () => {
         }
 
         @page {
-            size: A4 portrait;
+            size: A4 ${docOrientation};
             margin: 1cm;
         }
 
@@ -1174,7 +1178,10 @@ const App: React.FC = () => {
 
                 <div className="min-h-[800px] pb-32">
                   {viewMode === 'preview' ? (
-                    <article ref={contentRef} className="math-content prose prose-slate prose-indigo max-w-none">
+                    <article 
+                      ref={contentRef} 
+                      className={`math-content prose prose-slate prose-indigo transition-all duration-500 ${state.results[activeTab]?.orientation === 'landscape' ? 'max-w-6xl' : 'max-w-4xl'}`}
+                    >
                        <div dangerouslySetInnerHTML={{ __html: state.results[activeTab]?.html || '' }} />
                     </article>
                   ) : viewMode === 'source' ? (
@@ -1216,6 +1223,7 @@ const App: React.FC = () => {
           color: #475569;
         }
         @media print {
+          @page { size: A4 ${state.results[activeTab]?.orientation || 'portrait'}; margin: 1cm; }
           header, aside, button, label, .border-b { display: none !important; }
           main, .flex-1, .w-full { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
           article, section { border: none !important; padding: 0 !important; margin: 0 !important; page-break-inside: avoid; }
