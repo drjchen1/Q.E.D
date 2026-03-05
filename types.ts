@@ -39,6 +39,7 @@ export interface ConversionResult {
   width: number;
   height: number;
   orientation: 'portrait' | 'landscape';
+  fontSize: number;
   audit?: AccessibilityAudit;
   figures: FigureResult[];
 }

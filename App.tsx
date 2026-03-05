@@ -421,6 +421,7 @@ const App: React.FC = () => {
             width: pageData[i].width,
             height: pageData[i].height,
             orientation: pageData[i].orientation,
+            fontSize: 18,
             audit,
             figures: figureResults
           };
@@ -539,7 +540,6 @@ const App: React.FC = () => {
             margin: 0; 
             padding: 0; 
             line-height: 1.7;
-            font-size: 1.125rem;
         }
 
         .container {
@@ -549,6 +549,15 @@ const App: React.FC = () => {
             max-width: ${docOrientation === 'landscape' ? '1200px' : '900px'};
             transition: all 0.3s ease;
         }
+
+        .page-article {
+            font-size: 1.125rem; /* Default */
+            margin-bottom: 6rem;
+        }
+        
+        ${cleanResults.map(r => `
+        #page-${r.pageNumber} { font-size: ${r.fontSize}px; }
+        `).join('\n')}
 
         @media (min-width: 1024px) {
             .layout {
@@ -1136,7 +1145,28 @@ const App: React.FC = () => {
                 </button>
 
                 <h3 className="font-bold text-slate-900 mb-4 text-[10px] uppercase tracking-widest border-t border-slate-100 pt-4">Controls</h3>
-                <div className="space-y-2">
+                <div className="space-y-4">
+                   <div className="space-y-2">
+                     <div className="flex justify-between items-center">
+                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Font Size</label>
+                       <span className="text-[10px] font-black text-indigo-600">{state.results[activeTab]?.fontSize || 18}px</span>
+                     </div>
+                     <input 
+                       type="range" 
+                       min="12" 
+                       max="32" 
+                       value={state.results[activeTab]?.fontSize || 18} 
+                       onChange={(e) => {
+                         const newSize = parseInt(e.target.value);
+                         setState(prev => {
+                           const newResults = [...prev.results];
+                           newResults[activeTab] = { ...newResults[activeTab], fontSize: newSize };
+                           return { ...prev, results: newResults };
+                         });
+                       }}
+                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                     />
+                   </div>
                    <button 
                      onClick={handleRefineMath} 
                      disabled={isRefining}
@@ -1181,6 +1211,7 @@ const App: React.FC = () => {
                     <article 
                       ref={contentRef} 
                       className={`math-content prose prose-slate prose-indigo transition-all duration-500 ${state.results[activeTab]?.orientation === 'landscape' ? 'max-w-6xl' : 'max-w-4xl'}`}
+                      style={{ fontSize: `${state.results[activeTab]?.fontSize || 18}px` }}
                     >
                        <div dangerouslySetInnerHTML={{ __html: state.results[activeTab]?.html || '' }} />
                     </article>
