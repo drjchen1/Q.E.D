@@ -9,7 +9,6 @@ export interface PdfImageData {
   canvas: HTMLCanvasElement;
   width: number;
   height: number;
-  orientation: 'portrait' | 'landscape';
 }
 
 export const pdfToImageData = async (file: File): Promise<PdfImageData[]> => {
@@ -41,8 +40,7 @@ export const pdfToImageData = async (file: File): Promise<PdfImageData[]> => {
         base64, 
         canvas, 
         width: viewport.width, 
-        height: viewport.height,
-        orientation: (viewport.width > viewport.height ? 'landscape' : 'portrait') as 'landscape' | 'portrait'
+        height: viewport.height 
       };
     }));
 
@@ -92,8 +90,7 @@ export const pdfToImageData = async (file: File): Promise<PdfImageData[]> => {
       base64,
       canvas,
       width,
-      height,
-      orientation: (width > height ? 'landscape' : 'portrait') as 'landscape' | 'portrait'
+      height
     }];
   }
 
@@ -135,8 +132,7 @@ export const pdfToImageData = async (file: File): Promise<PdfImageData[]> => {
       base64,
       canvas,
       width,
-      height,
-      orientation: (width > height ? 'landscape' : 'portrait') as 'landscape' | 'portrait'
+      height
     }];
   }
 

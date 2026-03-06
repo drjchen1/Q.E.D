@@ -10,7 +10,6 @@ export interface Figure {
 export interface GeminiPageResponse {
   html: string;
   figures: Figure[];
-  latex?: string;
 }
 
 export interface AccessibilityAudit {
@@ -28,18 +27,13 @@ export interface FigureResult {
   originalSrc: string;
   currentSrc: string;
   alt: string;
-  width?: string;
-  alignment?: 'left' | 'center' | 'right';
 }
 
 export interface ConversionResult {
   html: string;
-  latex?: string;
   pageNumber: number;
   width: number;
   height: number;
-  orientation: 'portrait' | 'landscape';
-  fontSize: number;
   audit?: AccessibilityAudit;
   figures: FigureResult[];
 }
