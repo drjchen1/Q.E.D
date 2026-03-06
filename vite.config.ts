@@ -12,7 +12,15 @@ export default defineConfig(({ mode }) => {
       plugins: [react()],
       define: {
         'process.env.API_KEY': JSON.stringify(process.env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY)
+        'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY),
+        '__BUILD_DATE__': JSON.stringify(new Date().toLocaleString('en-US', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric', 
+          hour: '2-digit', 
+          minute: '2-digit',
+          timeZoneName: 'short'
+        }))
       },
       resolve: {
         alias: {

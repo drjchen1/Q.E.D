@@ -10,7 +10,6 @@ export interface Figure {
 export interface GeminiPageResponse {
   html: string;
   figures: Figure[];
-  latex?: string;
 }
 
 export interface AccessibilityAudit {
@@ -28,23 +27,16 @@ export interface FigureResult {
   originalSrc: string;
   currentSrc: string;
   alt: string;
-  width?: string;
-  alignment?: 'left' | 'center' | 'right';
 }
 
 export interface ConversionResult {
   html: string;
-  latex?: string;
   pageNumber: number;
   width: number;
   height: number;
-  orientation: 'portrait' | 'landscape';
-  fontSize: number;
   audit?: AccessibilityAudit;
   figures: FigureResult[];
 }
-
-export type ModelStrategy = 'flash' | 'hybrid';
 
 export interface AppState {
   isProcessing: boolean;
@@ -55,11 +47,10 @@ export interface AppState {
   totalTime?: number;
   sessionRequestCount: number;
   dailyRequestCount: number;
-  modelStrategy: ModelStrategy;
-  imageOptimization: boolean;
 }
 
 declare global {
+  const __BUILD_DATE__: string;
   interface Window {
     MathJax: {
       typesetPromise: (elements: any[]) => Promise<void>;
