@@ -301,6 +301,9 @@ const App: React.FC = () => {
             border-radius: 1rem;
             text-align: center;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         figcaption {
@@ -310,6 +313,9 @@ const App: React.FC = () => {
             margin-top: 1.5rem;
             font-style: italic;
             font-weight: 500;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
         }
 
         img {
