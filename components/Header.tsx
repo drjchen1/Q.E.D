@@ -31,9 +31,9 @@ const Header: React.FC<HeaderProps> = ({ onShowDocs }) => {
           </div>
         </div>
         
-        <nav className="hidden sm:flex items-center gap-8 text-xs font-black text-slate-400 uppercase tracking-widest">
-          <button onClick={onShowDocs} className="hover:text-indigo-600 transition-colors">Documentation</button>
-          <a href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600 transition-colors">WCAG 2.2 AA</a>
+        <nav className="hidden sm:flex items-center gap-8 font-black text-slate-400 uppercase tracking-widest">
+          <button onClick={onShowDocs} className="text-sm hover:text-indigo-600 transition-colors">How to use</button>
+          <a href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank" rel="noopener noreferrer" className="text-xs hover:text-indigo-600 transition-colors">WCAG 2.2 AA</a>
         </nav>
       </div>
     </header>

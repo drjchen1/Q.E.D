@@ -6,6 +6,7 @@ import ProcessingOverlay from './components/ProcessingOverlay';
 import ImageEditor from './components/ImageEditor';
 import Dashboard from './components/Dashboard';
 import ResultsView from './components/ResultsView';
+import PreProcessPreview from './components/PreProcessPreview';
 import AccessibilityAuditReport from './components/AccessibilityAuditReport';
 import HelpModal from './components/HelpModal';
 import { useDigitization } from './hooks/useDigitization';
@@ -15,8 +16,13 @@ const App: React.FC = () => {
     state,
     elapsedTime,
     originalFile,
+    pendingPages,
+    pendingLanguageLevel,
     isRefining,
     handleFileUpload,
+    rotatePendingPage,
+    confirmProcessing,
+    cancelPending,
     handleRefineMath,
     saveEditedFigures,
     incrementRequestCount
@@ -101,6 +107,10 @@ const App: React.FC = () => {
             --link-color: #4338ca;
         }
 
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         body { 
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
@@ -109,6 +119,8 @@ const App: React.FC = () => {
             padding: 0; 
             line-height: 1.7;
             font-size: 1.125rem;
+            max-width: 100vw;
+            overflow-x: hidden;
         }
 
         .container {
@@ -234,6 +246,17 @@ const App: React.FC = () => {
 
         .math-content { 
             color: var(--ink); 
+            min-width: 0;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* MathJax/Code Overrides */
+        mjx-container, .math-content pre, .math-content code {
+            max-width: 100% !important;
+            overflow-x: auto !important;
         }
 
         .math-content p {
@@ -350,7 +373,7 @@ const App: React.FC = () => {
 <body>
     <button id="sidebar-toggle" class="no-print toggle-sidebar-btn" aria-label="Toggle navigation sidebar" aria-expanded="true" aria-controls="sidebar-nav">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
     </button>
     <div class="container">
@@ -370,7 +393,7 @@ const App: React.FC = () => {
                     <div class="no-print" style="position: absolute; top: 0; right: 0;">
                         <a href="${originalFileName}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#CFB991] text-black rounded-xl font-black text-[11px] hover:bg-[#B19B69] transition-all border-2 border-black no-underline tracking-widest shadow-xl transform hover:-translate-y-0.5 active:translate-y-0">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             Download original notes
                         </a>
@@ -467,6 +490,16 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
+      {pendingPages && (
+        <PreProcessPreview 
+          pages={pendingPages}
+          languageLevel={pendingLanguageLevel}
+          onRotate={rotatePendingPage}
+          onConfirm={confirmProcessing}
+          onCancel={cancelPending}
+        />
+      )}
+
       <main className="flex-1 max-w-[1800px] mx-auto w-full px-4 sm:px-6 lg:px-12 py-8" role="main">
         {!state.results.length && !state.isProcessing ? (
           <Dashboard 
@@ -495,6 +528,10 @@ const App: React.FC = () => {
       </div>
 
       <style>{`
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
+        
         .notebox {
           border-left: 4px solid #e2e8f0;
           padding: 1rem 1.5rem;
@@ -504,6 +541,20 @@ const App: React.FC = () => {
           font-style: italic;
           color: #475569;
         }
+
+        .math-content {
+          min-width: 0;
+          overflow: hidden;
+          overflow-wrap: anywhere;
+          word-wrap: break-word;
+          word-break: break-word;
+        }
+
+        mjx-container, .math-content pre, .math-content code {
+          max-width: 100% !important;
+          overflow-x: auto !important;
+        }
+
         @media print {
           header, aside, button, label, .border-b { display: none !important; }
           main, .flex-1, .w-full { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; margin: 0 !important; padding: 0 !important; }
