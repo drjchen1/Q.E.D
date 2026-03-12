@@ -6,7 +6,6 @@ import ProcessingOverlay from './components/ProcessingOverlay';
 import ImageEditor from './components/ImageEditor';
 import Dashboard from './components/Dashboard';
 import ResultsView from './components/ResultsView';
-import PreProcessPreview from './components/PreProcessPreview';
 import AccessibilityAuditReport from './components/AccessibilityAuditReport';
 import HelpModal from './components/HelpModal';
 import { useDigitization } from './hooks/useDigitization';
@@ -16,23 +15,39 @@ const App: React.FC = () => {
     state,
     elapsedTime,
     originalFile,
-    pendingPages,
-    pendingLanguageLevel,
     isRefining,
     handleFileUpload,
-    rotatePendingPage,
-    confirmProcessing,
-    cancelPending,
     handleRefineMath,
     saveEditedFigures,
-    incrementRequestCount
+    incrementRequestCount,
+    reset
   } = useDigitization();
 
   const [viewMode, setViewMode] = useState<'preview' | 'source'>('preview');
   const [activeTab, setActiveTab] = useState<number>(0);
   const [showHelp, setShowHelp] = useState(false);
   const [showAuditReport, setShowAuditReport] = useState(false);
+  const [hasDownloaded, setHasDownloaded] = useState(false);
+  const [showResetWarning, setShowResetWarning] = useState(false);
   const [editingFigures, setEditingFigures] = useState<{ id: string, src: string, originalSrc: string, alt: string, pageIndex: number }[] | null>(null);
+
+  const handleReset = () => {
+    if (state.results.length > 0 && !hasDownloaded) {
+      setShowResetWarning(true);
+    } else {
+      performReset();
+    }
+  };
+
+  const performReset = () => {
+    reset();
+    setActiveTab(0);
+    setViewMode('preview');
+    setShowAuditReport(false);
+    setEditingFigures(null);
+    setHasDownloaded(false);
+    setShowResetWarning(false);
+  };
 
   const handleEditFigure = (pageIndex: number, figureId: string) => {
     const page = state.results[pageIndex];
@@ -107,10 +122,6 @@ const App: React.FC = () => {
             --link-color: #4338ca;
         }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
         body { 
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
@@ -119,8 +130,6 @@ const App: React.FC = () => {
             padding: 0; 
             line-height: 1.7;
             font-size: 1.125rem;
-            max-width: 100vw;
-            overflow-x: hidden;
         }
 
         .container {
@@ -237,26 +246,16 @@ const App: React.FC = () => {
         }
 
         article { 
-            margin-bottom: 8rem; 
+            margin-bottom: 4rem; 
             position: relative; 
             width: 100%; 
             background: white;
             padding: 0;
+            display: flow-root;
         }
 
         .math-content { 
             color: var(--ink); 
-            min-width: 0;
-            overflow: hidden;
-            overflow-wrap: anywhere;
-            word-wrap: break-word;
-            word-break: break-word;
-        }
-
-        /* MathJax/Code Overrides */
-        mjx-container, .math-content pre, .math-content code {
-            max-width: 100% !important;
-            overflow-x: auto !important;
         }
 
         .math-content p {
@@ -278,15 +277,14 @@ const App: React.FC = () => {
         }
 
         .notebox { 
-            border: 1px solid #e2e8f0;
             border-left: 4px solid var(--accent); 
-            padding: 2rem; 
-            margin: 3rem 0; 
+            padding: 1.5rem 2rem; 
+            margin: 2.5rem 0; 
             background-color: #f8fafc; 
-            font-style: normal; 
+            font-style: italic; 
             color: #334155; 
-            border-radius: 0.75rem;
-            shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            border-radius: 0 0.75rem 0.75rem 0;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         }
 
         h1, h2, h3, h4 {
@@ -317,18 +315,33 @@ const App: React.FC = () => {
         }
 
         figure {
-            margin: 4rem 0;
-            padding: 2rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
             background: #fff;
             border: 1px solid #f1f5f9;
             border-radius: 1rem;
             text-align: center;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            width: 100%;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
             max-width: 100%;
-            min-width: 0;
+            min-width: 280px;
             box-sizing: border-box;
-            overflow: hidden;
+            display: block;
+        }
+
+        @media (min-width: 1280px) {
+            figure {
+                float: right;
+                width: 40%;
+                min-width: 320px;
+                max-width: 500px;
+                margin: 0.5rem 0 2rem 3rem;
+                shape-outside: inset(0);
+            }
+            /* Clear floats for headings to maintain structure */
+            h1, h2, h3, h4, h5, h6 {
+                clear: both;
+                padding-top: 1rem;
+            }
         }
 
         figcaption {
@@ -338,9 +351,8 @@ const App: React.FC = () => {
             margin-top: 1.5rem;
             font-style: italic;
             font-weight: 500;
-            overflow-wrap: anywhere;
+            overflow-wrap: break-word;
             word-wrap: break-word;
-            word-break: break-word;
             hyphens: auto;
         }
 
@@ -447,6 +459,7 @@ const App: React.FC = () => {
     link.download = `${baseFileName}-acc.html`;
     link.click();
     URL.revokeObjectURL(url);
+    setHasDownloaded(true);
   };
 
   return (
@@ -476,6 +489,34 @@ const App: React.FC = () => {
         <HelpModal onClose={() => setShowHelp(false)} />
       )}
 
+      {showResetWarning && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 border border-slate-100">
+            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-6 text-amber-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            </div>
+            <h3 className="text-xl font-black text-slate-900 mb-2">Unsaved Changes</h3>
+            <p className="text-slate-600 mb-8 leading-relaxed">
+              You haven't downloaded your digitized notes yet. Starting a new document will permanently discard your current work.
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowResetWarning(false)}
+                className="flex-1 py-3 px-4 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors"
+              >
+                Go Back
+              </button>
+              <button 
+                onClick={performReset}
+                className="flex-1 py-3 px-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-200"
+              >
+                Discard & Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <AnimatePresence>
         {editingFigures && (
           <ImageEditor 
@@ -489,16 +530,6 @@ const App: React.FC = () => {
           />
         )}
       </AnimatePresence>
-
-      {pendingPages && (
-        <PreProcessPreview 
-          pages={pendingPages}
-          languageLevel={pendingLanguageLevel}
-          onRotate={rotatePendingPage}
-          onConfirm={confirmProcessing}
-          onCancel={cancelPending}
-        />
-      )}
 
       <main className="flex-1 max-w-[1800px] mx-auto w-full px-4 sm:px-6 lg:px-12 py-8" role="main">
         {!state.results.length && !state.isProcessing ? (
@@ -518,43 +549,40 @@ const App: React.FC = () => {
             onRefineMath={() => handleRefineMath(activeTab)}
             onDownloadHtml={handleDownloadHtml}
             onShowAudit={() => setShowAuditReport(true)}
+            onReset={handleReset}
             isRefining={isRefining}
           />
         )}
       </main>
 
       <div className="fixed bottom-4 right-4 text-[9px] font-black text-slate-300 uppercase tracking-widest pointer-events-none select-none z-0">
-        v0.99 | {__BUILD_DATE__}
+        V0.99b | {__BUILD_DATE__}
       </div>
 
       <style>{`
-        *, *::before, *::after {
-          box-sizing: border-box;
-        }
-        
         .notebox {
-          border-left: 4px solid #e2e8f0;
-          padding: 1rem 1.5rem;
-          margin: 1.5rem 0;
+          border-left: 4px solid #6366f1;
+          padding: 1.5rem 2rem;
+          margin: 2.5rem 0;
           background-color: #f8fafc;
-          border-radius: 0 1rem 1rem 0;
+          border-radius: 0 0.75rem 0.75rem 0;
           font-style: italic;
-          color: #475569;
+          color: #334155;
+          box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         }
-
-        .math-content {
-          min-width: 0;
-          overflow: hidden;
-          overflow-wrap: anywhere;
-          word-wrap: break-word;
-          word-break: break-word;
+        @media (min-width: 1280px) {
+          figure {
+            float: right;
+            width: 40%;
+            min-width: 320px;
+            max-width: 450px;
+            margin: 0 0 2rem 2.5rem;
+            shape-outside: inset(0);
+          }
+          h1, h2, h3, h4, h5, h6 {
+            clear: both;
+          }
         }
-
-        mjx-container, .math-content pre, .math-content code {
-          max-width: 100% !important;
-          overflow-x: auto !important;
-        }
-
         @media print {
           header, aside, button, label, .border-b { display: none !important; }
           main, .flex-1, .w-full { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; margin: 0 !important; padding: 0 !important; }

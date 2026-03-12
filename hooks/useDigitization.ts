@@ -1,10 +1,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { AppState, ConversionResult, LanguageLevel } from '../types';
-import { pdfToImageData, PdfImageData } from '../services/pdfService';
+import { pdfToImageData } from '../services/pdfService';
 import { convertPageToHtml, refineLatex } from '../services/geminiService';
 import { runAccessibilityAudit } from '../utils/accessibility';
 import { cropImage } from '../utils/image';
+import { cleanAltText } from '../utils/dom';
 
 export const useDigitization = () => {
   const [state, setState] = useState<AppState>({
@@ -19,8 +20,6 @@ export const useDigitization = () => {
 
   const [elapsedTime, setElapsedTime] = useState(0);
   const [originalFile, setOriginalFile] = useState<File | null>(null);
-  const [pendingPages, setPendingPages] = useState<PdfImageData[] | null>(null);
-  const [pendingLanguageLevel, setPendingLanguageLevel] = useState<LanguageLevel>('faithful');
   const [isRefining, setIsRefining] = useState(false);
 
   useEffect(() => {
@@ -66,66 +65,8 @@ export const useDigitization = () => {
 
   const handleFileUpload = async (file: File, languageLevel: LanguageLevel) => {
     if (!file) return;
+
     setOriginalFile(file);
-    setPendingLanguageLevel(languageLevel);
-    
-    setState(prev => ({
-      ...prev,
-      isProcessing: true,
-      statusMessage: 'Reading file...',
-    }));
-
-    try {
-      const pageData = await pdfToImageData(file);
-      setPendingPages(pageData);
-      setState(prev => ({ ...prev, isProcessing: false }));
-    } catch (err: any) {
-      setState(prev => ({ ...prev, isProcessing: false, error: err.message, statusMessage: 'Error' }));
-    }
-  };
-
-  const rotatePendingPage = (index: number) => {
-    if (!pendingPages) return;
-    const newPages = [...pendingPages];
-    const page = newPages[index];
-    
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    canvas.width = page.height;
-    canvas.height = page.width;
-
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate(Math.PI / 2);
-    ctx.drawImage(page.canvas, -page.width / 2, -page.height / 2);
-
-    const base64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
-    
-    newPages[index] = {
-      ...page,
-      canvas,
-      base64,
-      width: canvas.width,
-      height: canvas.height,
-      orientation: canvas.width > canvas.height ? 'landscape' : 'portrait'
-    };
-
-    setPendingPages(newPages);
-  };
-
-  const cancelPending = () => {
-    setPendingPages(null);
-    setOriginalFile(null);
-  };
-
-  const confirmProcessing = async () => {
-    if (!pendingPages || !originalFile) return;
-
-    const pagesToProcess = [...pendingPages];
-    const languageLevel = pendingLanguageLevel;
-    setPendingPages(null);
-
     const startTime = Date.now();
     setState(prev => ({
       ...prev,
@@ -133,12 +74,14 @@ export const useDigitization = () => {
       progress: 0,
       results: [],
       error: null,
-      statusMessage: 'Starting digitization...',
+      statusMessage: 'Reading file...',
       sessionRequestCount: 0
     }));
 
     try {
-      const totalPages = pagesToProcess.length;
+      const pageData = await pdfToImageData(file);
+      const totalPages = pageData.length;
+      
       const CONCURRENCY_LIMIT = 3;
       const results: ConversionResult[] = new Array(totalPages);
       let completedPages = 0;
@@ -160,7 +103,7 @@ export const useDigitization = () => {
           }));
 
           incrementRequestCount();
-          const geminiResponse = await convertPageToHtml(pagesToProcess[i].base64, i + 1, languageLevel);
+          const geminiResponse = await convertPageToHtml(pageData[i].base64, i + 1, languageLevel);
           updateProgress(80);
           
           let finalHtml = geminiResponse.html;
@@ -171,7 +114,7 @@ export const useDigitization = () => {
           }));
 
           const figureResults = geminiResponse.figures.map((fig) => {
-            const screenshotBase64 = cropImage(pagesToProcess[i].canvas, fig);
+            const screenshotBase64 = cropImage(pageData[i].canvas, fig);
             return {
               id: fig.id,
               originalSrc: screenshotBase64,
@@ -182,17 +125,20 @@ export const useDigitization = () => {
           
           figureResults.forEach(figResult => {
             const imgTagRegex = new RegExp(`<img[^>]*id=["']${figResult.id}["'][^>]*>`, 'g');
-            const cleanAlt = figResult.alt.replace(/\\\(|\\\)|\\\[|\\\]/g, '').replace(/"/g, '&quot;');
+            
+            const cleanAlt = cleanAltText(figResult.alt);
+            const displayAlt = figResult.alt; // Keep LaTeX for caption
+
             const figureHtml = `
-              <figure class="my-8 p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col items-center group/fig" role="group" aria-label="Visual figure: ${cleanAlt}">
-                <div class="relative overflow-hidden rounded-lg shadow-sm border border-slate-200 bg-white">
-                  <img src="${figResult.currentSrc}" alt="${cleanAlt}" class="max-w-full" data-figure-id="${figResult.id}">
+              <figure class="my-8 p-6 bg-slate-50 rounded-2xl border border-slate-100 group/fig" role="group" aria-label="Visual figure: ${cleanAlt}">
+                <div class="relative overflow-hidden rounded-lg shadow-sm border border-slate-200 bg-white flex justify-center">
+                  <img src="${figResult.currentSrc}" alt="${cleanAlt}" class="max-w-full h-auto" data-figure-id="${figResult.id}">
                   <button class="edit-figure-btn absolute top-2 right-2 p-2 bg-white/90 backdrop-blur shadow-lg rounded-lg opacity-0 group-hover/fig:opacity-100 transition-all hover:bg-indigo-600 hover:text-white" data-figure-id="${figResult.id}" title="Edit Figure">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                   </button>
                 </div>
-                <figcaption class="mt-4 text-sm text-slate-700 font-sans text-center italic" aria-hidden="true">
-                  Figure: ${figResult.alt}
+                <figcaption class="mt-4 text-sm text-slate-700 font-sans text-center italic leading-relaxed" aria-hidden="true">
+                  Figure: ${displayAlt}
                 </figcaption>
               </figure>
             `;
@@ -205,8 +151,8 @@ export const useDigitization = () => {
           results[i] = { 
             html: finalHtml, 
             pageNumber: i + 1,
-            width: pagesToProcess[i].width,
-            height: pagesToProcess[i].height,
+            width: pageData[i].width,
+            height: pageData[i].height,
             audit,
             figures: figureResults
           };
@@ -288,7 +234,7 @@ export const useDigitization = () => {
           const figure = img?.closest('figure');
           
           if (img && figure) {
-            const cleanAlt = (newAlt || updatedFig.alt).replace(/\\\(|\\\)|\\\[|\\\]/g, '').replace(/"/g, '&quot;');
+            const cleanAlt = cleanAltText(newAlt || updatedFig.alt);
             img.setAttribute('src', newSrc);
             img.setAttribute('alt', cleanAlt);
             figure.setAttribute('aria-label', `Visual figure: ${cleanAlt}`);
@@ -310,19 +256,30 @@ export const useDigitization = () => {
     });
   };
 
+  const reset = useCallback(() => {
+    setState({
+      isProcessing: false,
+      progress: 0,
+      results: [],
+      error: null,
+      statusMessage: 'Waiting for upload...',
+      sessionRequestCount: 0,
+      dailyRequestCount: state.dailyRequestCount // Keep daily count
+    });
+    setOriginalFile(null);
+    setElapsedTime(0);
+    setIsRefining(false);
+  }, [state.dailyRequestCount]);
+
   return {
     state,
     elapsedTime,
     originalFile,
-    pendingPages,
-    pendingLanguageLevel,
     isRefining,
     handleFileUpload,
-    rotatePendingPage,
-    confirmProcessing,
-    cancelPending,
     handleRefineMath,
     saveEditedFigures,
-    incrementRequestCount
+    incrementRequestCount,
+    reset
   };
 };

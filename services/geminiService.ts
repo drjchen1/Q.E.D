@@ -29,7 +29,7 @@ Rules:
    - VISUAL HIERARCHY: Use 'border-l-4 border-indigo-500 pl-6 my-8 italic text-slate-700' for important theorems or definitions.
    - MATHEMATICS: Ensure block math '\\[ ... \\]' is wrapped in a '<div class="my-8 overflow-x-auto py-4 bg-slate-50 rounded-xl px-6 border border-slate-100 shadow-sm">' to make it stand out and be readable.
    - LISTS: Use 'list-disc list-inside space-y-2 ml-4 mb-6' for unordered lists.
-   - NOTEPADS/BOXES: For boxed annotations, use '<div class="bg-amber-50 border-l-4 border-amber-400 p-6 my-8 rounded-r-xl shadow-sm text-slate-800">'.
+   - NOTEPADS/BOXES: For boxed annotations or important notes, use '<div class="notebox">'.
 4. MATHEMATICS (CRITICAL): Convert all mathematical expressions into LaTeX. 
    - Use \\( ... \\) for inline math.
    - Use \\[ ... \\] for block/display math.
@@ -51,10 +51,11 @@ Rules:
 5. GRAPHS & DIAGRAMS (FIGURES ONLY):
    - Identify every actual drawing (axes, curves, sketches).
    - Determine its exact bounding box in [ymin, xmin, ymax, xmax] format (normalized 0-1000).
-   - Generate a CONCISE alt text description (2-3 sentences) for blind students. 
-   - MATHEMATICAL PRECISION (CRITICAL): Use LaTeX (wrapped in \\( ... \\)) for complex mathematical expressions within the alt text. This is vital for visual rendering in captions.
-   - ACCESSIBILITY: Also provide a clear, spoken-word description of the math (e.g., "the square root of x") to ensure screen reader compatibility.
-   - VISUAL STRUCTURE: Describe the overall layout (e.g., "A Cartesian coordinate system"), then specific components (axes, labels, curves), and finally the mathematical meaning.
+   - Generate a HIGHLY CONCISE alt text description (1-2 sentences, max 125 characters).
+   - NO ABRUPT CUTOFFS: Ensure the description is a complete, well-formed thought that ends naturally.
+   - BEST FIT: Do not assume a fixed orientation (portrait/landscape). Focus on logical content and let the layout handle the visual flow.
+   - MATHEMATICAL PRECISION: Use LaTeX (wrapped in \\( ... \\)) for complex mathematical expressions.
+   - ACCESSIBILITY: Provide a clear, spoken-word description of the math.
    - In the HTML, place an <img> tag with a matching ID: <img id="fig_ID" alt="[CONCISE DESCRIPTION]">.
 
 6. OUTPUT FORMAT: Return ONLY a JSON object:
@@ -240,14 +241,14 @@ export const describeFigure = async (base64Image: string): Promise<string> => {
       contents: {
         parts: [
           { inlineData: { mimeType: 'image/png', data: base64Image.split(',')[1] || base64Image } },
-          { text: `Generate a highly accessible, concise description (2-3 sentences) of this mathematical figure for a blind student.
+          { text: `Generate a highly accessible, extremely concise description (1-2 sentences, max 125 characters) of this mathematical figure for a blind student.
           
           RULES:
-          1. STRUCTURE: Start with a high-level summary, then describe the axes/layout, then specific curves/data points, and finally the mathematical significance.
-          2. CONCISENESS: Keep the total length to 2-3 sentences.
-          3. MATHEMATICAL PRECISION: Use LaTeX (wrapped in \\( ... \\)) for all mathematical expressions.
-          3. SPOKEN MATH: Immediately following any LaTeX, provide a clear spoken-word equivalent in parentheses (e.g., "the integral from 0 to infinity").
-          4. BE DESCRIPTIVE: Describe shapes, slopes, intersections, and labels in detail.
+          1. CONCISENESS: Limit to 1-2 sentences and ensure the total length is under 125 characters.
+          2. NO ABRUPT CUTOFFS: Ensure the description is a complete, well-formed thought that ends naturally.
+          3. BEST FIT: Do not assume fixed orientation; describe the logical mathematical content.
+          4. MATHEMATICAL PRECISION: Use LaTeX (wrapped in \\( ... \\)) for all mathematical expressions.
+          5. SPOKEN MATH: Immediately following any LaTeX, provide a clear spoken-word equivalent in parentheses.
           
           Return ONLY the description text.` }
         ]

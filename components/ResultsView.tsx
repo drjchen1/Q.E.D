@@ -13,6 +13,7 @@ interface ResultsViewProps {
   onRefineMath: () => void;
   onDownloadHtml: () => void;
   onShowAudit: () => void;
+  onReset: () => void;
   isRefining: boolean;
 }
 
@@ -27,6 +28,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   onRefineMath,
   onDownloadHtml,
   onShowAudit,
+  onReset,
   isRefining
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -113,6 +115,13 @@ const ResultsView: React.FC<ResultsViewProps> = ({
              </button>
              <button onClick={onBatchEdit} className="w-full py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-slate-800">BATCH EDIT FIGURES</button>
              <button onClick={onDownloadHtml} className="w-full py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-bold hover:bg-indigo-700">DOWNLOAD HTML</button>
+             <button 
+               onClick={onReset} 
+               className="w-full py-2.5 mt-4 bg-white border-2 border-slate-200 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:text-slate-900 transition-all flex items-center justify-center gap-2"
+             >
+               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+               New Document
+             </button>
           </div>
         </div>
 
