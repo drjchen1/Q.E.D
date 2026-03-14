@@ -19,7 +19,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
         </button>
 
         <div className="mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl mb-6">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-purdue/20 text-purdue rounded-2xl mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -33,7 +33,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">How to use this converter</h3>
             <div className="space-y-4">
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-indigo-50 rounded-full flex items-center justify-center text-xs font-black text-indigo-600">01</div>
+                <div className="flex-shrink-0 w-8 h-8 bg-purdue/10 rounded-full flex items-center justify-center text-xs font-black text-purdue">01</div>
                 <div>
                   <h4 className="font-bold text-slate-900 mb-1">Full-Screen View</h4>
                   <p className="text-sm text-slate-500 leading-relaxed">For the best experience and layout accuracy, we recommend using the app in full-screen mode.</p>
@@ -64,7 +64,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
           </section>
 
           <section className="pt-6 border-t border-slate-100">
-            <h3 className="text-xs font-black text-indigo-600 uppercase tracking-widest mb-4">Tips for Best Results</h3>
+            <h3 className="text-xs font-black text-purdue uppercase tracking-widest mb-4">Tips for Best Results</h3>
             <div className="grid gap-4">
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                 <h5 className="text-xs font-black text-slate-900 uppercase mb-1">Lighting & Quality</h5>

@@ -118,8 +118,8 @@ const App: React.FC = () => {
             --bg: #fdfdfd;
             --ink: #1e293b;
             --heading-color: #0f172a;
-            --accent: #4f46e5;
-            --link-color: #4338ca;
+            --accent: #CEB888;
+            --link-color: #B19B69;
         }
 
         body { 
@@ -176,7 +176,7 @@ const App: React.FC = () => {
                 margin: 0 auto;
                 display: block;
                 padding: 5rem;
-                background: white;
+                background: #fafaf9;
                 box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
                 border-radius: 1.5rem;
             }
@@ -267,9 +267,9 @@ const App: React.FC = () => {
             bottom: 2rem;
             left: 2rem;
             z-index: 50;
-            background: var(--accent);
-            color: white;
-            border: none;
+            background: #CEB888;
+            color: black;
+            border: 2px solid black;
             border-radius: 9999px;
             width: 3.5rem;
             height: 3.5rem;
@@ -283,7 +283,7 @@ const App: React.FC = () => {
 
         .toggle-sidebar-btn:hover {
             transform: scale(1.1);
-            background: var(--link-color);
+            background: #B19B69;
         }
 
         .sr-only {
@@ -690,12 +690,12 @@ const App: React.FC = () => {
       </main>
 
       <div className="fixed bottom-4 right-4 text-[7px] md:text-[9px] font-black text-slate-300 uppercase tracking-widest pointer-events-none select-none z-0">
-        V0.99E | {__BUILD_DATE__}
+        V0.99P | {__BUILD_DATE__}
       </div>
 
       <style>{`
         .notebox {
-          border-left: 4px solid #6366f1;
+          border-left: 4px solid #CEB888;
           padding: 1.5rem 2rem;
           margin: 2.5rem 0;
           background-color: #f8fafc;

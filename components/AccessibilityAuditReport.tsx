@@ -26,7 +26,7 @@ const AccessibilityAuditReport: React.FC<AccessibilityAuditReportProps> = ({ res
 
         <div className="p-10 border-b border-slate-100">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-purdue text-black rounded-2xl flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -36,7 +36,7 @@ const AccessibilityAuditReport: React.FC<AccessibilityAuditReportProps> = ({ res
               <p className="text-slate-500 font-medium">WCAG 2.2 AA Compliance Report for Page {activeTab + 1}</p>
               {state.totalTime && (
                 <div className="mt-2 space-y-1">
-                  <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest">Total Processing Time: {state.totalTime}s</p>
+                  <p className="text-purdue font-bold text-xs uppercase tracking-widest">Total Processing Time: {state.totalTime}s</p>
                   <div className="flex gap-4">
                     <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">
                       {state.sessionRequestCount} Requests ({Math.round((state.sessionRequestCount / (state.totalTime / 60)) * 10) / 10} RPM)
@@ -54,16 +54,16 @@ const AccessibilityAuditReport: React.FC<AccessibilityAuditReportProps> = ({ res
             <div className="flex-1">
               <div className="flex justify-between mb-2">
                 <span className="text-sm font-black text-slate-900 uppercase tracking-widest">Compliance Score</span>
-                <span className={`text-sm font-black ${activeAudit?.score === 100 ? 'text-green-600' : 'text-amber-600'}`}>{activeAudit?.score}%</span>
+                <span className={`text-sm font-black ${activeAudit?.score === 100 ? 'text-slate-600' : 'text-amber-600'}`}>{activeAudit?.score}%</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                 <div 
-                  className={`h-full transition-all duration-1000 ${activeAudit?.score === 100 ? 'bg-green-500' : 'bg-amber-500'}`}
+                  className={`h-full transition-all duration-1000 ${activeAudit?.score === 100 ? 'bg-slate-500' : 'bg-amber-500'}`}
                   style={{ width: `${activeAudit?.score || 0}%` }}
                 ></div>
               </div>
             </div>
-            <div className={`px-6 py-3 rounded-2xl font-black text-lg ${activeAudit?.score === 100 ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
+            <div className={`px-6 py-3 rounded-2xl font-black text-lg ${activeAudit?.score === 100 ? 'bg-slate-100 text-slate-700' : 'bg-amber-50 text-amber-700'}`}>
               {activeAudit?.score === 100 ? 'EXCELLENT' : 'IMPROVEMENT NEEDED'}
             </div>
           </div>
@@ -74,10 +74,10 @@ const AccessibilityAuditReport: React.FC<AccessibilityAuditReportProps> = ({ res
             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Detailed Checks</h3>
             <div className="grid gap-4">
               {activeAudit?.checks.map((check, idx) => (
-                <div key={idx} className={`p-6 rounded-3xl border ${check.passed ? 'bg-green-50/30 border-green-100' : 'bg-amber-50/30 border-amber-100'}`}>
+                <div key={idx} className={`p-6 rounded-3xl border ${check.passed ? 'bg-slate-50/50 border-slate-200' : 'bg-amber-50/30 border-amber-100'}`}>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${check.passed ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${check.passed ? 'bg-slate-200 text-slate-600' : 'bg-amber-100 text-amber-600'}`}>
                         {check.passed ? (
                           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
                         ) : (
@@ -95,7 +95,7 @@ const AccessibilityAuditReport: React.FC<AccessibilityAuditReportProps> = ({ res
                         )}
                       </div>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${check.passed ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                    <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${check.passed ? 'bg-slate-200 text-slate-700' : 'bg-amber-100 text-amber-700'}`}>
                       {check.passed ? 'Passed' : 'Failed'}
                     </div>
                   </div>

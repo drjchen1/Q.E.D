@@ -58,7 +58,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-slate-900 text-[10px] uppercase tracking-widest">Accessibility</h3>
-            <div className={`px-2 py-0.5 rounded-full text-[9px] font-black ${activeAudit?.score === 100 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+            <div className={`px-2 py-0.5 rounded-full text-[9px] font-black ${activeAudit?.score === 100 ? 'bg-slate-200 text-slate-700' : 'bg-amber-100 text-amber-700'}`}>
               {activeAudit?.score}% AA
             </div>
           </div>
@@ -66,7 +66,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
           <div className="mb-4">
             <div className="w-full bg-slate-200 rounded-full h-1 overflow-hidden">
               <div 
-                className={`h-full transition-all duration-1000 ${activeAudit?.score === 100 ? 'bg-green-500' : 'bg-amber-500'}`}
+                className={`h-full transition-all duration-1000 ${activeAudit?.score === 100 ? 'bg-slate-500' : 'bg-amber-500'}`}
                 style={{ width: `${activeAudit?.score || 0}%` }}
               ></div>
             </div>
@@ -76,7 +76,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
             {activeAudit?.checks.map((check, idx) => (
               <div key={idx} className="group relative">
                 <div className="flex items-center gap-2">
-                  <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 flex items-center justify-center ${check.passed ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
+                  <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 flex items-center justify-center ${check.passed ? 'bg-slate-200 text-slate-600' : 'bg-amber-100 text-amber-600'}`}>
                     {check.passed ? (
                       <svg className="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                     ) : (
@@ -114,7 +114,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
                {isRefining ? 'REFINING...' : 'REFINE MATH (AI)'}
              </button>
              <button onClick={onBatchEdit} className="w-full py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-slate-800">BATCH EDIT FIGURES</button>
-             <button onClick={onDownloadHtml} className="w-full py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-bold hover:bg-indigo-700">DOWNLOAD HTML</button>
+             <button onClick={onDownloadHtml} className="w-full py-2.5 bg-purdue text-black rounded-xl text-[10px] font-bold hover:brightness-95 transition-all">DOWNLOAD HTML</button>
              <button 
                onClick={onReset} 
                className="w-full py-2.5 mt-4 bg-white border-2 border-slate-200 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:text-slate-900 transition-all flex items-center justify-center gap-2"
@@ -132,7 +132,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
               <button 
                 key={i}
                 onClick={() => setActiveTab(i)}
-                className={`px-3 py-2 rounded-lg text-[10px] font-black border transition-all ${activeTab === i ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'}`}
+                className={`px-3 py-2 rounded-lg text-[10px] font-black border transition-all ${activeTab === i ? 'bg-purdue text-black border-purdue shadow-md' : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'}`}
               >
                 P.{r.pageNumber}
               </button>
@@ -145,15 +145,15 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         <div className="w-full max-w-none">
           <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
              <div className="flex gap-4">
-                <button onClick={() => setViewMode('preview')} className={`text-[11px] font-black tracking-widest ${viewMode === 'preview' ? 'text-indigo-600' : 'text-slate-300 hover:text-slate-500'}`}>PREVIEW</button>
-                <button onClick={() => setViewMode('source')} className={`text-[11px] font-black tracking-widest ${viewMode === 'source' ? 'text-indigo-600' : 'text-slate-300 hover:text-slate-500'}`}>SOURCE</button>
+                <button onClick={() => setViewMode('preview')} className={`text-[11px] font-black tracking-widest ${viewMode === 'preview' ? 'text-purdue' : 'text-slate-300 hover:text-slate-500'}`}>PREVIEW</button>
+                <button onClick={() => setViewMode('source')} className={`text-[11px] font-black tracking-widest ${viewMode === 'source' ? 'text-purdue' : 'text-slate-300 hover:text-slate-500'}`}>SOURCE</button>
              </div>
              <div className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Page {activeTab + 1} of {results.length}</div>
           </div>
 
           <div className="min-h-[800px] pb-32">
             {viewMode === 'preview' ? (
-              <article ref={contentRef} className="math-content prose prose-slate prose-indigo max-w-none">
+              <article ref={contentRef} className="math-content prose prose-slate max-w-none bg-[#fafaf9] p-8 md:p-12 rounded-3xl shadow-sm border border-slate-100">
                  <div dangerouslySetInnerHTML={{ __html: results[activeTab]?.html || '' }} />
               </article>
             ) : (

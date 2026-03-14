@@ -26,8 +26,8 @@ Rules:
    - Use Tailwind CSS classes to create a visually pleasing, modern academic look.
    - TYPOGRAPHY: Use 'font-sans' for a clean, readable look. For headings, use 'font-black tracking-tight text-slate-900'.
    - SPACING: Use 'mb-6' for paragraphs and 'mt-10 mb-4' for headings to create a clear visual rhythm.
-   - VISUAL HIERARCHY: Use 'border-l-4 border-indigo-500 pl-6 my-8 italic text-slate-700' for important theorems or definitions.
-   - MATHEMATICS: Ensure block math '\\[ ... \\]' is wrapped in a '<div class="my-8 overflow-x-auto py-4 bg-slate-50 rounded-xl px-6 border border-slate-100 shadow-sm">' to make it stand out and be readable.
+   - VISUAL HIERARCHY: Use 'border-l-4 border-purdue pl-6 my-8 italic text-slate-700' for important theorems or definitions.
+   - MATHEMATICS: Ensure block math '\\[ ... \\]' is wrapped in a '<div class="my-8 overflow-x-auto py-4 bg-slate-50 rounded-xl px-6 border border-slate-200 shadow-sm">' to make it stand out and be readable. Use a neutral, muted stone/slate palette. AVOID using green or other vibrant colors for boxes.
    - LISTS: Use 'list-disc list-inside space-y-2 ml-4 mb-6' for unordered lists.
    - NOTEPADS/BOXES: For boxed annotations or important notes, use '<div class="notebox">'.
    - LAYOUT (TWO-COLUMN GRID): Whenever you include a figure, wrap the figure and the 1-2 paragraphs or headings immediately preceding it that provide context for that figure inside a '<div class="grid-layout">'. This ensures the text and figure are displayed side-by-side without overlapping.
@@ -375,7 +375,7 @@ export const generateGraph = async (equations: string): Promise<string> => {
           
           SPECIFICATIONS:
           1. STYLE: Clean, academic, digital plot (like Desmos or Wolfram Alpha).
-          2. COLORS: Use distinct, high-contrast colors for different curves (e.g., blue, red, green).
+          2. COLORS: Use distinct, high-contrast colors for different curves (e.g., slate, amber, purdue).
           3. AXES: Clear X and Y axes with numerical labels and a grid.
           4. LABELS: Include a legend or label the curves directly with their equations.
           5. BACKGROUND: Pure white background.

@@ -45,7 +45,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
   const currentFigure = figures[currentIndex];
   
   const [adjustments, setAdjustments] = useState<Record<string, FigureAdjustments>>({});
-  const [color, setColor] = useState('#4f46e5');
+  const [color, setColor] = useState('#CEB888');
   const [mode, setMode] = useState<'view' | 'crop' | 'draw' | 'graph' | 'text' | 'adjust' | 'accessibility' | 'ai-prompt' | 'layout'>('view');
   const [isDrawing, setIsDrawing] = useState(false);
   const [isRecreating, setIsRecreating] = useState(false);
@@ -184,7 +184,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
         ctx.fillText(ann.text, ann.x, ann.y);
         
         if (selectedAnnotationId === ann.id) {
-          ctx.strokeStyle = '#4f46e5';
+          ctx.strokeStyle = '#CEB888';
           ctx.lineWidth = 2;
           const metrics = ctx.measureText(ann.text);
           ctx.strokeRect(ann.x - 5, ann.y - ann.size, metrics.width + 10, ann.size + 10);
@@ -559,7 +559,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
         {/* Header */}
         <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-4">
-            <div className="bg-indigo-600 text-white p-2 rounded-xl">
+            <div className="bg-purdue text-black p-2 rounded-xl">
               <Pencil className="w-5 h-5" />
             </div>
             <div>
@@ -607,7 +607,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                     <button 
                       key={fig.id}
                       onClick={() => setCurrentIndex(idx)}
-                      className={`flex-shrink-0 w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${currentIndex === idx ? 'border-indigo-600 scale-110' : 'border-transparent opacity-50'}`}
+                      className={`flex-shrink-0 w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${currentIndex === idx ? 'border-purdue scale-110' : 'border-transparent opacity-50'}`}
                     >
                       <img src={editedSrcs[fig.id] || fig.src} className="w-full h-full object-cover" />
                     </button>
@@ -621,7 +621,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
               <div className="grid grid-cols-2 gap-2">
                 <button 
                   onClick={() => switchToSource(currentFigure.originalSrc)}
-                  className={`p-2 bg-white border rounded-xl flex flex-col items-center gap-2 transition-all group ${editedSrcs[currentFigure.id] === currentFigure.originalSrc ? 'border-indigo-600 ring-2 ring-indigo-100' : 'border-slate-200 hover:border-indigo-300'}`}
+                  className={`p-2 bg-white border rounded-xl flex flex-col items-center gap-2 transition-all group ${editedSrcs[currentFigure.id] === currentFigure.originalSrc ? 'border-purdue ring-2 ring-purdue/20' : 'border-slate-200 hover:border-purdue/50'}`}
                 >
                   <div className="w-full aspect-video bg-slate-100 rounded-lg overflow-hidden border border-slate-100">
                     <img src={currentFigure.originalSrc} alt="Original" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
@@ -630,7 +630,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                 </button>
                 <button 
                   onClick={() => switchToSource(recreatedSrcs[currentFigure.id] || currentFigure.src)}
-                  className={`p-2 bg-white border rounded-xl flex flex-col items-center gap-2 transition-all group ${editedSrcs[currentFigure.id] === (recreatedSrcs[currentFigure.id] || currentFigure.src) ? 'border-indigo-600 ring-2 ring-indigo-100' : 'border-slate-200 hover:border-indigo-300'}`}
+                  className={`p-2 bg-white border rounded-xl flex flex-col items-center gap-2 transition-all group ${editedSrcs[currentFigure.id] === (recreatedSrcs[currentFigure.id] || currentFigure.src) ? 'border-purdue ring-2 ring-purdue/20' : 'border-slate-200 hover:border-purdue/50'}`}
                 >
                   <div className="w-full aspect-video bg-slate-100 rounded-lg overflow-hidden border border-slate-100">
                     <img src={recreatedSrcs[currentFigure.id] || currentFigure.src} alt="AI Generated" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
@@ -645,7 +645,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
               <button 
                 onClick={() => handleMagicRecreate(false)}
                 disabled={isRecreating}
-                className="w-full py-4 bg-gradient-to-br from-indigo-600 to-violet-700 text-white font-bold rounded-2xl hover:from-indigo-700 hover:to-violet-800 shadow-xl shadow-indigo-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
+                className="w-full py-4 bg-gradient-to-br from-purdue to-slate-900 text-black font-bold rounded-2xl hover:brightness-95 shadow-xl shadow-purdue/20 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
               >
                 {isRecreating ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -658,7 +658,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                 <button 
                   onClick={() => handleMagicRecreate(true)}
                   disabled={isRecreating}
-                  className="w-full py-3 bg-white border border-indigo-200 text-indigo-600 font-bold rounded-2xl hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3 bg-white border border-purdue/30 text-purdue font-bold rounded-2xl hover:bg-purdue/10 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Recreate All Selected
@@ -672,63 +672,63 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
               <div className="grid grid-cols-3 gap-2">
                 <button 
                   onClick={() => setMode('view')}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'view' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'view' ? 'bg-purdue text-black shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
                 >
                   <RotateCcw className="w-5 h-5" />
                   <span className="text-[9px] font-bold">Reset</span>
                 </button>
                 <button 
                   onClick={() => setMode('adjust')}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'adjust' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'adjust' ? 'bg-purdue text-black shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
                 >
                   <SlidersHorizontal className="w-5 h-5" />
                   <span className="text-[9px] font-bold">Adjust</span>
                 </button>
                 <button 
                   onClick={() => setMode('crop')}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'crop' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'crop' ? 'bg-purdue text-black shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
                 >
                   <Crop className="w-5 h-5" />
                   <span className="text-[9px] font-bold">Crop</span>
                 </button>
                 <button 
                   onClick={() => setMode('draw')}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'draw' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'draw' ? 'bg-purdue text-black shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
                 >
                   <Pencil className="w-5 h-5" />
                   <span className="text-[9px] font-bold">Draw</span>
                 </button>
                 <button 
                   onClick={() => setMode('text')}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'text' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'text' ? 'bg-purdue text-black shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
                 >
                   <Type className="w-5 h-5" />
                   <span className="text-[9px] font-bold">Text</span>
                 </button>
                 <button 
                   onClick={() => setMode('graph')}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'graph' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'graph' ? 'bg-purdue text-black shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
                 >
                   <LineChart className="w-5 h-5" />
                   <span className="text-[9px] font-bold">Graph</span>
                 </button>
                 <button 
                   onClick={() => setMode('ai-prompt')}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'ai-prompt' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'ai-prompt' ? 'bg-purdue text-black shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
                 >
                   <MessageSquareText className="w-5 h-5" />
                   <span className="text-[9px] font-bold">AI Prompt</span>
                 </button>
                 <button 
                   onClick={() => setMode('layout')}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'layout' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'layout' ? 'bg-purdue text-black shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
                 >
                   <Plus className="w-5 h-5" />
                   <span className="text-[9px] font-bold">Layout</span>
                 </button>
                 <button 
                   onClick={() => setMode('accessibility')}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'accessibility' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${mode === 'accessibility' ? 'bg-purdue text-black shadow-lg' : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300'}`}
                 >
                   <CheckCircle2 className="w-5 h-5" />
                   <span className="text-[9px] font-bold">Alt Text</span>
@@ -744,13 +744,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                   <textarea
                     value={equations}
                     onChange={(e) => setEquations(e.target.value)}
-                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs min-h-[100px] font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs min-h-[100px] font-mono focus:ring-2 focus:ring-purdue focus:border-purdue transition-all"
                     placeholder="y = x^2&#10;y = sin(x)"
                   />
                   <button
                     onClick={handleGenerateGraph}
                     disabled={isGeneratingGraph || !equations.trim()}
-                    className="w-full py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 transition-all active:scale-95"
+                    className="w-full py-3 bg-purdue text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-95 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-purdue/20 transition-all active:scale-95"
                   >
                     {isGeneratingGraph ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                     Generate Digital Graph
@@ -770,13 +770,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                   <textarea
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
-                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs min-h-[100px] focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs min-h-[100px] focus:ring-2 focus:ring-purdue focus:border-purdue transition-all"
                     placeholder="e.g., A clean digital version of this triangle with labels A, B, C and a right angle marker."
                   />
                   <button
                     onClick={handlePromptRecreate}
                     disabled={isPromptRecreating || !aiPrompt.trim()}
-                    className="w-full py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 transition-all active:scale-95"
+                    className="w-full py-3 bg-purdue text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-95 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-purdue/20 transition-all active:scale-95"
                   >
                     {isPromptRecreating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                     Recreate with AI
@@ -796,13 +796,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                   <div>
                     <div className="flex justify-between mb-2">
                       <label className="text-[10px] font-bold text-slate-600">Figure Width</label>
-                      <span className="text-[10px] font-black text-indigo-600">{widths[currentFigure.id] || '100%'}</span>
+                      <span className="text-[10px] font-black text-purdue">{widths[currentFigure.id] || '100%'}</span>
                     </div>
                     <input 
                       type="range" min="10" max="100" step="5" 
                       value={parseInt(widths[currentFigure.id] || '100')} 
                       onChange={(e) => setWidths(prev => ({ ...prev, [currentFigure.id]: `${e.target.value}%` }))}
-                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purdue"
                     />
                     <div className="flex justify-between mt-1 text-[8px] text-slate-400 font-bold">
                       <span>10%</span>
@@ -818,7 +818,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                         <button
                           key={align}
                           onClick={() => setAlignments(prev => ({ ...prev, [currentFigure.id]: align }))}
-                          className={`py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${alignments[currentFigure.id] === align ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'}`}
+                          className={`py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${alignments[currentFigure.id] === align ? 'bg-purdue text-black border-purdue shadow-md' : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'}`}
                         >
                           {align}
                         </button>
@@ -840,7 +840,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                   <button 
                     onClick={handleRegenerateDescription}
                     disabled={isDescribing}
-                    className="text-[9px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-1 hover:text-indigo-700 disabled:opacity-50"
+                    className="text-[9px] font-black text-purdue uppercase tracking-widest flex items-center gap-1 hover:brightness-95 disabled:opacity-50"
                   >
                     {isDescribing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
                     Regenerate
@@ -887,11 +887,11 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                   <textarea
                     value={altTexts[currentFigure.id] ?? currentFigure.alt}
                     onChange={(e) => setAltTexts(prev => ({ ...prev, [currentFigure.id]: e.target.value }))}
-                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs min-h-[120px] focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-sans"
+                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs min-h-[120px] focus:ring-2 focus:ring-purdue focus:border-purdue transition-all font-sans"
                     placeholder="Describe the figure for screen readers..."
                   />
-                  <div className="p-3 bg-indigo-50 rounded-xl border border-indigo-100">
-                    <h4 className="text-[9px] font-black text-indigo-600 uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <div className="p-3 bg-purdue/10 rounded-xl border border-purdue/20">
+                    <h4 className="text-[9px] font-black text-purdue uppercase tracking-widest mb-2 flex items-center gap-2">
                       <Sigma size={10} /> Math Preview
                     </h4>
                     <div ref={altPreviewRef} className="text-[11px] text-slate-700 leading-relaxed min-h-[1.5rem]">
@@ -925,7 +925,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                             type="range" min="10" max="100" 
                             value={currentAnnotations.find(a => a.id === selectedAnnotationId)?.size || 24}
                             onChange={(e) => updateSelectedAnnotation({ size: parseInt(e.target.value) })}
-                            className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-3"
+                            className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purdue mt-3"
                         />
                         <button onClick={deleteSelectedAnnotation} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
                             <Trash2 className="w-4 h-4" />
@@ -947,23 +947,23 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                   <div>
                     <div className="flex justify-between mb-1">
                       <label className="text-[10px] font-bold text-slate-600">Gamma</label>
-                      <span className="text-[10px] font-black text-indigo-600">{currentAdj.gamma.toFixed(2)}</span>
+                      <span className="text-[10px] font-black text-purdue">{currentAdj.gamma.toFixed(2)}</span>
                     </div>
                     <input 
                       type="range" min="0.1" max="3" step="0.1" value={currentAdj.gamma} 
                       onChange={(e) => updateAdjustment('gamma', parseFloat(e.target.value))}
-                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purdue"
                     />
                   </div>
                   <div>
                     <div className="flex justify-between mb-1">
                       <label className="text-[10px] font-bold text-slate-600">Saturation</label>
-                      <span className="text-[10px] font-black text-indigo-600">{currentAdj.saturate}%</span>
+                      <span className="text-[10px] font-black text-purdue">{currentAdj.saturate}%</span>
                     </div>
                     <input 
                       type="range" min="0" max="200" value={currentAdj.saturate} 
                       onChange={(e) => updateAdjustment('saturate', parseInt(e.target.value))}
-                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purdue"
                     />
                   </div>
                 </div>
@@ -983,13 +983,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                   </div>
                   <div>
                     <div className="flex justify-between mb-1">
-                      <label className="text-[10px] font-bold text-green-600">Green</label>
-                      <span className="text-[10px] font-black text-green-600">{currentAdj.green}%</span>
+                      <label className="text-[10px] font-bold text-slate-600">Green</label>
+                      <span className="text-[10px] font-black text-slate-600">{currentAdj.green}%</span>
                     </div>
                     <input 
                       type="range" min="0" max="200" value={currentAdj.green} 
                       onChange={(e) => updateAdjustment('green', parseInt(e.target.value))}
-                      className="w-full h-1.5 bg-green-100 rounded-lg appearance-none cursor-pointer accent-green-600"
+                      className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-slate-600"
                     />
                   </div>
                   <div>
@@ -1011,7 +1011,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
               <section>
                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Colors</h3>
                 <div className="grid grid-cols-4 gap-2">
-                  {['#4f46e5', '#ef4444', '#10b981', '#f59e0b', '#000000', '#ffffff', '#ec4899', '#8b5cf6'].map((c) => (
+                  {['#CEB888', '#ef4444', '#78716c', '#f59e0b', '#000000', '#ffffff', '#ec4899', '#8b5cf6'].map((c) => (
                     <button
                       key={c}
                       onClick={() => setColor(c)}
@@ -1032,12 +1032,12 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                     <label className="text-[11px] font-bold text-slate-600 flex items-center gap-2">
                       <Sun className="w-3 h-3" /> Brightness
                     </label>
-                    <span className="text-[11px] font-black text-indigo-600">{currentAdj.brightness}%</span>
+                    <span className="text-[11px] font-black text-purdue">{currentAdj.brightness}%</span>
                   </div>
                   <input 
                     type="range" min="0" max="200" value={currentAdj.brightness} 
                     onChange={(e) => updateAdjustment('brightness', parseInt(e.target.value))}
-                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purdue"
                   />
                 </div>
                 <div>
@@ -1045,12 +1045,12 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
                     <label className="text-[11px] font-bold text-slate-600 flex items-center gap-2">
                       <Contrast className="w-3 h-3" /> Contrast
                     </label>
-                    <span className="text-[11px] font-black text-indigo-600">{currentAdj.contrast}%</span>
+                    <span className="text-[11px] font-black text-purdue">{currentAdj.contrast}%</span>
                   </div>
                   <input 
                     type="range" min="0" max="200" value={currentAdj.contrast} 
                     onChange={(e) => updateAdjustment('contrast', parseInt(e.target.value))}
-                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purdue"
                   />
                 </div>
                 {figures.length > 1 && (
@@ -1068,7 +1068,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ figures, onSave, onClose, onA
             <div className="pt-8 border-t border-slate-200 space-y-3">
               <button 
                 onClick={handleSave}
-                className="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 shadow-xl shadow-indigo-200 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 bg-purdue text-black font-bold rounded-2xl hover:brightness-95 shadow-xl shadow-purdue/20 transition-all flex items-center justify-center gap-2"
               >
                 <Save className="w-4 h-4" /> Save All Changes
               </button>

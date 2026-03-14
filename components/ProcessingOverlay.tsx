@@ -35,7 +35,7 @@ const FloatingMath = () => {
             delay: Math.random() * 10,
             ease: "linear"
           }}
-          className="absolute text-indigo-900 font-serif text-2xl"
+          className="absolute text-purdue font-serif text-2xl"
         >
           {symbol}
         </motion.div>
@@ -50,8 +50,8 @@ const ProcessingOverlay: React.FC<ProcessingOverlayProps> = ({ progress, status,
     <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
       {/* Immersive background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-[120px] animate-pulse delay-1000" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purdue/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-slate-900/10 rounded-full blur-[120px] animate-pulse delay-1000" />
       </div>
 
       <motion.div 
@@ -82,7 +82,7 @@ const ProcessingOverlay: React.FC<ProcessingOverlayProps> = ({ progress, status,
                   <span className="text-6xl font-black text-slate-900 tracking-tighter">
                     {Math.round(progress)}
                   </span>
-                  <span className="text-xl font-black text-indigo-600 ml-1">%</span>
+                  <span className="text-xl font-black text-purdue ml-1">%</span>
                 </motion.div>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2">Processing</span>
               </div>
@@ -90,7 +90,7 @@ const ProcessingOverlay: React.FC<ProcessingOverlayProps> = ({ progress, status,
           </div>
           
           <div className="space-y-4 mb-12">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Q.E.D. Engine <span className="text-indigo-600 italic serif">Active</span></h2>
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Q.E.D. Engine <span className="text-purdue italic serif">Active</span></h2>
             <div className="h-6 overflow-hidden flex justify-center">
               <AnimatePresence mode="wait">
                 <motion.p 
@@ -113,7 +113,7 @@ const ProcessingOverlay: React.FC<ProcessingOverlayProps> = ({ progress, status,
               { label: 'Refine', icon: Sparkles, threshold: 80 }
             ].map((step, i) => (
               <div key={i} className="flex flex-col items-center gap-4">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 border ${progress >= step.threshold ? 'bg-indigo-600 border-indigo-500 text-white shadow-[0_0_30px_rgba(79,70,229,0.2)]' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 border ${progress >= step.threshold ? 'bg-purdue border-purdue text-black shadow-[0_0_30px_rgba(206,184,136,0.2)]' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
                   <step.icon size={24} strokeWidth={2.5} />
                 </div>
                 <span className={`text-[9px] font-black uppercase tracking-widest ${progress >= step.threshold ? 'text-slate-900' : 'text-slate-400'}`}>
