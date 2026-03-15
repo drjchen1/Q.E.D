@@ -27,15 +27,19 @@ const Dashboard: React.FC<DashboardProps> = ({ onFileUpload, isProcessing }) => 
           Ready to <span className="text-purdue" style={{ fontFamily: "'Pixelify Sans', sans-serif", fontWeight: 700, fontSize: '1.05em', verticalAlign: 'baseline', display: 'inline-block', transform: 'translateY(0.02em)' }}>Digitize.</span>
         </h2>
         
-        <div className="mb-6 md:mb-8">
-          <div className="flex items-center justify-center gap-1 p-1 bg-slate-100 rounded-full border border-slate-200 w-full">
+        <div className="mb-6 md:mb-8 flex flex-col items-center">
+          <div className="inline-flex items-center p-0.5 bg-slate-100 rounded-full border border-slate-200 shadow-inner">
             {(['faithful', 'natural', 'fleshed_out'] as const).map((level) => (
               <button
                 key={level}
                 onClick={() => setLanguageLevel(level)}
-                className={`flex-1 px-2 md:px-4 py-1.5 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${languageLevel === level ? 'bg-white text-purdue shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                className={`px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
+                  languageLevel === level 
+                    ? 'bg-purdue text-white shadow-md' 
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'
+                }`}
               >
-                {level === 'faithful' ? 'Faithful' : level === 'natural' ? 'Natural' : 'Fleshed Out'}
+                {level === 'faithful' ? 'Faithful' : level === 'natural' ? 'Natural' : 'Detailed'}
               </button>
             ))}
           </div>
