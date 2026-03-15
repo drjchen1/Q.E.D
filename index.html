@@ -52,39 +52,6 @@
       font-size: 1.25rem;
       line-height: 1.6;
     }
-    @media (min-width: 1280px) {
-      .math-content {
-        display: grid;
-        grid-template-columns: 1fr 400px;
-        gap: 0 4rem;
-        align-items: start;
-      }
-      .math-content > * {
-        grid-column: 1;
-      }
-      .math-content > figure {
-        grid-column: 2;
-        grid-row: span 20;
-        margin: 0;
-      }
-      .math-content h1, .math-content h2, .math-content h3 {
-        grid-column: 1 / -1;
-        clear: both;
-      }
-      .grid-layout {
-        display: grid;
-        grid-template-columns: 1fr 400px;
-        gap: 0 4rem;
-        align-items: start;
-      }
-      .grid-layout > *:not(figure) {
-        grid-column: 1;
-      }
-      .grid-layout > figure {
-        grid-column: 2;
-        margin: 0;
-      }
-    }
     .math-content h1, .math-content h2, .math-content h3 {
       font-family: 'Inter', sans-serif;
     }
@@ -98,7 +65,8 @@
       box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
       max-width: 100%;
       box-sizing: border-box;
-      overflow: hidden;
+      overflow-x: auto;
+      display: block;
     }
     .math-content figcaption {
       font-family: 'Inter', sans-serif;
@@ -111,6 +79,33 @@
       word-wrap: break-word;
       hyphens: auto;
     }
+
+    /* Responsive fixes for AI generated content */
+    .math-content img, 
+    .math-content svg, 
+    .math-content video {
+      max-width: 100% !important;
+      height: auto !important;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Allow horizontal scrolling for wide math equations */
+    .math-content .MathJax_Display,
+    .math-content mjx-container[display="true"] {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 0.5rem;
+    }
+
+    /* Allow horizontal scrolling for wide tables */
+    .math-content table {
+      max-width: 100%;
+      overflow-x: auto;
+      display: block;
+    }
+
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
