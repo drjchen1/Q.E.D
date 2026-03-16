@@ -704,10 +704,10 @@ const App: React.FC = () => {
           color: #334155;
           box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         }
-        @media (min-width: 1280px) {
+        @media (min-width: 1400px) {
           .math-content {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 1fr 350px;
             gap: 0 4rem;
             align-items: start;
           }
@@ -727,7 +727,7 @@ const App: React.FC = () => {
           }
           .grid-layout {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 1fr 350px;
             gap: 0 4rem;
             align-items: start;
           }

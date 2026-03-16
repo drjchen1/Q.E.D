@@ -20,7 +20,7 @@ Your task is to convert scanned handwritten mathematics lecture notes into a hig
 Rules:
 1. ${adaptationInstruction}
 2. ACCESSIBILITY: Use semantic HTML5 elements (<article>, <section>, <h1>-<h6>, <p>, <ul>, <ol>). 
-    - HEADING HIERARCHY (STRICT): Always start with an <h1> for the main title. Subsequent headings must follow a strict sequential order (<h2>, then <h3>, etc.) without skipping levels.
+    - HEADING HIERARCHY (CRITICAL A11Y): You are FORBIDDEN from skipping heading levels. Always start with an <h1> for the main title. You MUST use <h2> for major sections and <h3> for sub-sections. NEVER use <h4>, <h5>, or <h6> unless you have explicitly used the preceding level on the exact same page. Do not use headings purely for visual sizing.
     - COLOR CONTRAST (STRICT): You are FORBIDDEN from using light gray text colors (e.g., text-slate-300, text-gray-300, text-zinc-300, text-slate-400). You are FORBIDDEN from using the "style" attribute for colors or backgrounds (e.g., style="color:..."). Use high-contrast text colors to ensure WCAG 2.2 AA compliance. 
       - APPROVED COLORS: For emphasis, you MAY use high-contrast Tailwind classes: 'text-slate-900', 'text-blue-900', 'text-red-900', 'text-emerald-900', 'text-indigo-900'.
 3. UNIVERSAL DESIGN & AESTHETICS (BEAUTIFUL & ACCESSIBLE):
@@ -75,7 +75,7 @@ CRITICAL: Do not include any internal monologue, reasoning, or "thinking" proces
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function callGeminiWithRetry(base64Image: string, pageNumber: number, level: LanguageLevel = 'faithful', retries = 5): Promise<string> {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   
   for (let i = 0; i < retries; i++) {
     try {
@@ -148,7 +148,7 @@ async function callGeminiWithRetry(base64Image: string, pageNumber: number, leve
 }
 
 async function callBatchGeminiWithRetry(images: { base64: string, pageNumber: number }[], level: LanguageLevel = 'faithful', retries = 5): Promise<string> {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   
   for (let i = 0; i < retries; i++) {
     try {
@@ -260,7 +260,7 @@ export const convertPageToHtml = async (base64Image: string, pageNumber: number,
 };
 
 export const refineLatex = async (html: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -299,7 +299,7 @@ export const refineLatex = async (html: string): Promise<string> => {
 };
 
 export const recreateFigure = async (base64Image: string, alt: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
@@ -337,7 +337,7 @@ export const recreateFigure = async (base64Image: string, alt: string): Promise<
 };
 
 export const describeFigure = async (base64Image: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -370,7 +370,7 @@ export const describeFigure = async (base64Image: string): Promise<string> => {
 };
 
 export const generateGraph = async (equations: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3.1-flash-image-preview',
@@ -414,7 +414,7 @@ export const generateGraph = async (equations: string): Promise<string> => {
 };
 
 export const touchUpImage = async (base64Image: string, prompt: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',

@@ -21,8 +21,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onFileUpload, isProcessing }) => 
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-8 md:mt-12 text-center p-6 md:p-12 border-2 border-dashed border-slate-200 rounded-[2rem] md:rounded-[3rem]">
-      <div className="w-full md:w-fit mx-auto">
+    <div className="w-fit mx-auto mt-8 md:mt-12 text-center p-8 md:p-10 border-2 border-dashed border-slate-200 rounded-[2rem] md:rounded-[2.5rem]">
+      <div className="mx-auto">
         <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-6 md:mb-8 whitespace-normal md:whitespace-nowrap">
           Ready to <span className="text-purdue" style={{ fontFamily: "'Pixelify Sans', sans-serif", fontWeight: 700, fontSize: '1.05em', verticalAlign: 'baseline', display: 'inline-block', transform: 'translateY(0.02em)' }}>Digitize.</span>
         </h2>
@@ -48,7 +48,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onFileUpload, isProcessing }) => 
           </p>
         </div>
 
-        <div className="mb-8 md:mb-12">
+        <div>
           <label className="inline-flex items-center gap-3 md:gap-4 px-8 md:px-12 py-4 md:py-6 bg-purdue hover:brightness-95 text-black font-bold rounded-xl md:rounded-2xl shadow-xl transition-all cursor-pointer">
             <span className="text-sm md:text-base">Upload File</span>
             <input type="file" className="sr-only" accept="application/pdf,image/*,.heic,.heif,.txt" onChange={handleFileChange} disabled={isProcessing} />

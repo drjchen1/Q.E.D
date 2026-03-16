@@ -41,14 +41,23 @@ const ResultsView: React.FC<ResultsViewProps> = ({
       );
 
       const editButtons = contentRef.current.querySelectorAll('.edit-figure-btn');
+      
+      const handleEditClick = (e: Event) => {
+        const figureId = (e.currentTarget as HTMLElement).getAttribute('data-figure-id');
+        if (figureId) {
+          onEditFigure(activeTab, figureId);
+        }
+      };
+
       editButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const figureId = (e.currentTarget as HTMLElement).getAttribute('data-figure-id');
-          if (figureId) {
-            onEditFigure(activeTab, figureId);
-          }
-        });
+        btn.addEventListener('click', handleEditClick);
       });
+
+      return () => {
+        editButtons.forEach(btn => {
+          btn.removeEventListener('click', handleEditClick);
+        });
+      };
     }
   }, [results, activeTab, viewMode, onEditFigure]);
 
@@ -141,7 +150,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </nav>
       </aside>
 
-      <div className="flex-1 w-full flex flex-col items-center">
+      <div className="flex-1 w-full flex flex-col">
         <div className="w-full max-w-none">
           <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
              <div className="flex gap-4">
@@ -153,7 +162,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
           <div className="min-h-[800px] pb-32">
             {viewMode === 'preview' ? (
-              <article ref={contentRef} className="math-content prose prose-slate max-w-none bg-[#fafaf9] p-8 md:p-12 rounded-3xl shadow-sm border border-slate-100">
+              <article ref={contentRef} className="math-content prose prose-slate max-w-none bg-[#fafaf9] p-8 md:p-12 rounded-3xl shadow-sm border border-slate-100 w-full">
                  <div dangerouslySetInnerHTML={{ __html: results[activeTab]?.html || '' }} />
               </article>
             ) : (
