@@ -63,14 +63,38 @@ const ProcessingOverlay: React.FC<ProcessingOverlayProps> = ({ progress, status,
         
         <div className="relative z-10">
           <div className="mb-12 flex justify-center">
-            <div className="relative">
+            <div className="relative w-48 h-48 flex items-center justify-center">
+              {/* Progress Ring SVG */}
+              <svg className="absolute inset-0 w-full h-full -rotate-90">
+                <circle
+                  cx="96"
+                  cy="96"
+                  r="88"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="text-slate-100"
+                />
+                <motion.circle
+                  cx="96"
+                  cy="96"
+                  r="88"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  className="text-purdue"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: progress / 100 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                />
+              </svg>
+
               <motion.div 
                 animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                className="w-48 h-48 border border-slate-200 rounded-full flex items-center justify-center"
-              >
-                <div className="w-40 h-40 border border-slate-200 rounded-full border-dashed" />
-              </motion.div>
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="w-40 h-40 border border-slate-100 rounded-full border-dashed flex items-center justify-center"
+              />
               
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <motion.div 
@@ -108,19 +132,31 @@ const ProcessingOverlay: React.FC<ProcessingOverlayProps> = ({ progress, status,
           
           <div className="grid grid-cols-3 gap-8 mb-12">
             {[
-              { label: 'Scan', icon: Scan, threshold: 10 },
-              { label: 'Parse', icon: Binary, threshold: 40 },
-              { label: 'Refine', icon: Sparkles, threshold: 80 }
-            ].map((step, i) => (
-              <div key={i} className="flex flex-col items-center gap-4">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 border ${progress >= step.threshold ? 'bg-purdue border-purdue text-black shadow-[0_0_30px_rgba(206,184,136,0.2)]' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
-                  <step.icon size={24} strokeWidth={2.5} />
+              { label: 'Scan', icon: Scan, threshold: 0, next: 40 },
+              { label: 'Parse', icon: Binary, threshold: 40, next: 80 },
+              { label: 'Refine', icon: Sparkles, threshold: 80, next: 101 }
+            ].map((step, i) => {
+              const isActive = progress >= step.threshold && progress < step.next;
+              const isDone = progress >= step.next;
+              
+              return (
+                <div key={i} className="flex flex-col items-center gap-4">
+                  <motion.div 
+                    animate={isActive ? { 
+                      scale: [1, 1.05, 1],
+                      boxShadow: ["0 0 0px rgba(206,184,136,0)", "0 0 20px rgba(206,184,136,0.3)", "0 0 0px rgba(206,184,136,0)"]
+                    } : {}}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 border ${progress >= step.threshold ? 'bg-purdue border-purdue text-black shadow-[0_0_30px_rgba(206,184,136,0.1)]' : 'bg-slate-50 border-slate-200 text-slate-400'}`}
+                  >
+                    <step.icon size={24} strokeWidth={2.5} />
+                  </motion.div>
+                  <span className={`text-[9px] font-black uppercase tracking-widest ${progress >= step.threshold ? 'text-slate-900' : 'text-slate-400'}`}>
+                    {step.label}
+                  </span>
                 </div>
-                <span className={`text-[9px] font-black uppercase tracking-widest ${progress >= step.threshold ? 'text-slate-900' : 'text-slate-400'}`}>
-                  {step.label}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
           
           <div className="flex items-center justify-center gap-6 text-slate-400 font-mono text-[10px] font-bold">

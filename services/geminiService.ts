@@ -21,7 +21,8 @@ Rules:
 1. ${adaptationInstruction}
 2. ACCESSIBILITY: Use semantic HTML5 elements (<article>, <section>, <h1>-<h6>, <p>, <ul>, <ol>). 
     - HEADING HIERARCHY (STRICT): Always start with an <h1> for the main title. Subsequent headings must follow a strict sequential order (<h2>, then <h3>, etc.) without skipping levels.
-    - COLOR CONTRAST (STRICT): Do NOT use light gray text colors (e.g., text-slate-300, text-gray-400, text-zinc-300). Use high-contrast text colors (e.g., text-slate-900, text-slate-800, or default black) to ensure WCAG 2.2 AA compliance. Avoid inline "style" attributes for colors.
+    - COLOR CONTRAST (STRICT): You are FORBIDDEN from using light gray text colors (e.g., text-slate-300, text-gray-300, text-zinc-300, text-slate-400). You are FORBIDDEN from using the "style" attribute for colors or backgrounds (e.g., style="color:..."). Use high-contrast text colors to ensure WCAG 2.2 AA compliance. 
+      - APPROVED COLORS: For emphasis, you MAY use high-contrast Tailwind classes: 'text-slate-900', 'text-blue-900', 'text-red-900', 'text-emerald-900', 'text-indigo-900'.
 3. UNIVERSAL DESIGN & AESTHETICS (BEAUTIFUL & ACCESSIBLE):
    - Use Tailwind CSS classes to create a visually pleasing, modern academic look.
    - TYPOGRAPHY: Use 'font-sans' for a clean, readable look. For headings, use 'font-black tracking-tight text-slate-900'.
@@ -271,8 +272,12 @@ export const refineLatex = async (html: string): Promise<string> => {
           1. Ensure all inline math uses \\( ... \\) and block math uses \\[ ... \\].
           2. Pay special attention to <figcaption> tags and ensure any mathematical expressions within them are correctly wrapped in LaTeX delimiters.
           3. Fix common OCR errors (e.g., 'x' instead of '\\times', missing backslashes for functions like '\\sin', '\\log', etc.).
-          4. DO NOT change any other HTML structure or text content.
-          5. If the math is already correct, return the HTML unchanged.
+          4. ACCESSIBILITY (STRICT): Ensure the HTML remains WCAG 2.2 AA compliant. 
+             - REMOVE any "style" attributes containing "color:" or "background:".
+             - REMOVE any low-contrast Tailwind classes (text-slate-300, text-gray-300, text-zinc-300, text-slate-400).
+             - Replace them with high-contrast alternatives. APPROVED COLORS for emphasis: 'text-slate-900', 'text-blue-900', 'text-red-900', 'text-emerald-900', 'text-indigo-900'.
+          5. DO NOT change any other HTML structure or text content.
+          6. If the math and accessibility are already correct, return the HTML unchanged.
           
           HTML CONTENT:
           ${html}
