@@ -159,7 +159,7 @@ export const useDigitization = () => {
             completedPages++;
             setState(prev => ({
               ...prev,
-              progress: (completedPages / totalPages) * 100,
+              progress: Math.max(prev.progress, (completedPages / totalPages) * 100),
               statusMessage: `Completed ${completedPages} of ${totalPages} pages...`,
               results: results.filter(r => r !== undefined).sort((a, b) => a.pageNumber - b.pageNumber)
             }));
