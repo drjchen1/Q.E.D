@@ -10,9 +10,35 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ onFileUpload, isProcessing, onShowDocs }) => {
   const [languageLevel, setLanguageLevel] = useState<LanguageLevel>('faithful');
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    if (file) {
+      onFileUpload(file, languageLevel);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isProcessing) setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (isProcessing) return;
+
+    const file = e.dataTransfer.files?.[0];
     if (file) {
       onFileUpload(file, languageLevel);
     }
@@ -44,7 +70,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onFileUpload, isProcessing, onSho
       </div>
 
       {/* 3. The Card */}
-      <div className="w-full max-w-lg text-center p-8 md:p-12 border-2 border-dashed border-slate-200 rounded-[2rem] md:rounded-[2.5rem] bg-white">
+      <div 
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`w-full max-w-lg text-center p-8 md:p-12 border-2 border-dashed rounded-[2rem] md:rounded-[2.5rem] bg-white transition-all duration-300 ${
+          isDragging 
+            ? 'border-purdue bg-purdue/5 scale-[1.02] shadow-2xl shadow-purdue/10' 
+            : 'border-slate-200'
+        }`}
+      >
         <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-8 whitespace-normal md:whitespace-nowrap">
           Ready to <span className="text-purdue" style={{ fontFamily: "'Pixelify Sans', sans-serif", fontWeight: 700, fontSize: '1.05em', verticalAlign: 'baseline', display: 'inline-block', transform: 'translateY(0.02em)' }}>Digitize.</span>
         </h2>

@@ -82,6 +82,10 @@ export const useDigitization = () => {
       const pageData = await pdfToImageData(file, true);
       const totalPages = pageData.length;
       
+      // Ensure we hit the "gaslight zone" (34-67%) even for fast or single-page documents
+      setState(prev => ({ ...prev, progress: 45, statusMessage: 'Analyzing document structure...' }));
+      await new Promise(resolve => setTimeout(resolve, 1200)); // Give them enough time to notice the weirdness
+      
       const BATCH_SIZE = 2; // Micro-batching: 2 pages per request for maximum stability
       const CONCURRENCY_LIMIT = 2; // Process 2 batches at once for speed
       const results: ConversionResult[] = new Array(totalPages);
