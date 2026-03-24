@@ -672,11 +672,6 @@ const App: React.FC = () => {
               isProcessing={state.isProcessing} 
               onShowDocs={() => setShowHelp(true)}
             />
-            <footer className="fixed bottom-6 left-0 right-0 flex justify-center pointer-events-none select-none z-0">
-              <div className="text-[9px] font-mono text-slate-400 uppercase tracking-[0.3em]">
-                © 2026 KUAN-HUA CHEN // LIBERATED LOGIC // MODIFY AT WILL
-              </div>
-            </footer>
           </>
         ) : (
           <ResultsView 
